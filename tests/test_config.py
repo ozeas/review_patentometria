@@ -30,6 +30,15 @@ class ConfigTests(unittest.TestCase):
         cfg["prevalence"] = {"title": ["openalex", "lens"]}
         self.assertTrue(any("openalex" in e for e in validate_config(cfg)))
 
+    def test_prevalencia_que_prefere_base_sem_o_campo_e_erro(self):
+        cfg = copy.deepcopy(DEFAULT_CONFIG)
+        cfg["prevalence"] = {"abstract": ["google", "lens"]}
+        self.assertTrue(any("abstract" in e and "google" in e for e in validate_config(cfg)))
+
+    def test_prevalencia_padrao_passa(self):
+        self.assertEqual([e for e in validate_config(copy.deepcopy(DEFAULT_CONFIG))
+                          if "prevalência" in e], [])
+
     def test_normalizacao_preenche_opcionais_e_mantem_obrigatorios(self):
         cfg = {"blocks": [{"name": "(i) x", "terms": ["alpha"]}], "periods": [[2000, 2026]],
                "stage1": {"label": "a", "exclusion_reasons": ["r"]},

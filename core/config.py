@@ -99,4 +99,6 @@ def validate_config(cfg: dict | None) -> list[str]:
             if base not in SOURCES:
                 erros.append(f"prevalência de '{campo}' aponta para base desconhecida: {base}")
 
+    from .sources import validar_prevalencia  # import tardio: evita ciclo
+    erros.extend(validar_prevalencia(cfg))
     return erros
