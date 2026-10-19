@@ -1,0 +1,28 @@
+{
+  "core_recorte": "nucleo",
+  "recortes": {"nucleo": "conjunto principal", "BR": "Brasil"},
+  "utility_kinds": ["U"],
+  "prio_link_min_digits": 8,
+  "periods": [[1971, 2009], [2010, 2019], [2020, 2026]],
+  "window_months": 36,
+  "collection_date": "2026-01-01",
+  "blocks": [
+    {"name": "(i) termo do tema", "terms": ["substitua por um termo do tema"]},
+    {"name": "(ii) contexto de aplicação", "terms": ["substitua por um termo de contexto"]}
+  ],
+  "classification_block": ["G01N"],
+  "stage1": {
+    "label": "Relação entre o tema e o contexto",
+    "exclusion_reasons": ["Falso positivo lexical", "Outro domínio de aplicação"]
+  },
+  "stage2": {
+    "label": "Segmento",
+    "inclusion_segments": ["Segmento incluído"],
+    "exclusion_reasons": ["Segmento excluído", "Transversal"]
+  },
+  "strata": [
+    {"code": "S1", "name": "núcleo", "definition": "O tema é nomeado no título e constitui o objeto da invenção."},
+    {"code": "S2", "name": "aplicado", "definition": "O tema é instrumento de um método voltado a outra finalidade."}
+  ],
+  "top_n": 15
+}
