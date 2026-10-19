@@ -87,6 +87,20 @@ e `exportar_estudo` emitem esse bloco (`procedencia`) com o que está faltando
 --exigir-procedencia` transforma qualquer falta em falha. É o registro que a
 coleta anterior não tinha: sem ele, o número não é rastreável até o arquivo.
 
+### Consulta declarada × consulta lida do arquivo
+
+- `query_text` — **consulta registrada**, declarada pelo analista (tela do
+  arquivo ou `manage.py registrar_consulta`). É o que os porteiros exigem.
+- `query_no_arquivo` — texto que a própria exportação imprime no cabeçalho
+  (`manage.py extrair_consulta <rodada>`). É **evidência** do que foi executado,
+  nunca substitui a declarada.
+- Divergência entre as duas é sinalizada na tela e no relatório; com
+  `--exigir-consulta` ela falha (código 1).
+- `ingest()` não lê consulta de arquivo — há teste garantindo isso
+  (`tests/test_hardening.py::ConsultaSeparadaTests`).
+- Só Espacenet e Google imprimem a consulta no arquivo (Lens e Derwent não):
+  para elas, `extrair_consulta` avisa que não há o que ler.
+
 ### Regressão contra o artigo
 
 `referencia_2026-10-15.json` contém os números do Material e Métodos v2:
