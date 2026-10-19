@@ -201,3 +201,20 @@ class ConsultaSeparadaTests(TestCase):
         self.assertEqual(sf.query_text, "G01N30 AND oil")
         self.assertEqual(sf.query_no_arquivo, '(ipc =/low "G01N" OR ipc =/low "C10G")')
         self.assertTrue(sf.consulta_extraida)
+
+    def test_comando_extrai_so_para_o_campo_de_evidencia(self):
+        cabecalho = ('"Espacenet";"";\n"Patent search";"";\n'
+                     '"156 results found for (ta = ""gas chromatography"")";"";\n'
+                     '"No";"Title";"Publication number"\n'
+                     '"1";"T";"US1"\n')
+        sf = services.ingest(self.rnd, SimpleUploadedFile("espacenet_nucleo.csv",
+                                                          (FIX / "espacenet_sample.csv").read_bytes()))
+        # o fixture não traz a linha da consulta; forjamos o cabeçalho no arquivo salvo
+        sf.file.save("espacenet_manual.csv", ContentFile(cabecalho.encode()), save=True)
+
+        call_command("extrair_consulta", self.rnd.id, stdout=io.StringIO())
+
+        sf.refresh_from_db()
+        self.assertEqual(sf.query_text, "")                        # declarada continua vazia
+        self.assertIn("gas chromatography", sf.query_no_arquivo)    # evidência gravada
+        self.assertIsNotNone(sf.query_no_arquivo_em)
