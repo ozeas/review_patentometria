@@ -1,0 +1,38 @@
+{% extends "studies/base.html" %}
+{% block content %}
+<h1>Tesauro</h1>
+<p class="lead">{{ n_unif }} unificações e {{ n_excl }} exclusões. Critério para exclusão: o termo pode ocorrer, com o mesmo sentido, em uma patente de qualquer domínio tecnológico.</p>
+<div class="grid g2">
+  <div class="card">
+    <h2>Nova entrada</h2>
+    <form method="post">{% csrf_token %}
+      <div class="row">
+        <div><label>Termo</label>{{ form.label }}</div>
+        <div><label>Substituir por (vazio = excluir)</label>{{ form.replace_by }}</div>
+      </div>
+      <div class="row"><div><label>Categoria</label>{{ form.category }}</div><div><label>Nota</label>{{ form.note }}</div></div>
+      <p><button class="btn">Adicionar</button></p>
+    </form>
+  </div>
+  <div class="card">
+    <h2>Importar / exportar</h2>
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}<input type="hidden" name="action" value="import">
+      <input type="file" name="file" required>
+      <label style="display:inline"><input type="checkbox" name="replace"> substituir o tesauro atual</label>
+      <button class="btn ghost sm">Importar thesaurus.txt</button>
+    </form>
+    <p><a class="btn ghost" href="{% url 'thesaurus_download' study.id %}">Baixar thesaurus.txt</a></p>
+    <p class="small muted">Formato VOSviewer: <code>label⇥replace by</code>. Na exportação, as exclusões vêm antes das unificações.</p>
+  </div>
+</div>
+<div class="card scroll" style="margin-top:1rem">
+  <table>
+    <tr><th>Termo</th><th>Substituir por</th><th>Categoria</th><th>Nota</th><th></th></tr>
+    {% for e in entries %}
+    <tr><td>{{ e.label }}</td><td>{% if e.replace_by %}{{ e.replace_by }}{% else %}<span class="tag bad">excluir</span>{% endif %}</td>
+      <td class="small">{{ e.get_category_display }}</td><td class="small">{{ e.note }}</td>
+      <td><form method="post" class="inline">{% csrf_token %}<input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="{{ e.id }}"><button class="btn danger sm">×</button></form></td></tr>
+    {% empty %}<tr><td colspan="5" class="muted">Vazio.</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

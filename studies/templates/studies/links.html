@@ -1,0 +1,39 @@
+{% extends "studies/base.html" %}
+{% block content %}
+<h1>Ligações manuais</h1>
+<p class="lead">Pares de famílias sem número em comum nas exportações, com a mesma data de prioridade mais antiga, depositante em comum e título semelhante. A união só ocorre após verificação do analista; as ligações valem para todas as rodadas do estudo.</p>
+<div class="card">
+  <h2>Sugestões ({{ suggestions|length }})</h2>
+  {% if suggestions %}
+  <table>
+    <tr><th>Famílias</th><th>Prioridade</th><th>Depositante em comum</th><th>Títulos</th><th class="num">Semelhança</th><th></th></tr>
+    {% for s in suggestions %}
+    <tr>
+      <td class="mono"><a href="{% url 'family' round.id s.family_a %}">{{ s.family_a }}</a> ↔ <a href="{% url 'family' round.id s.family_b %}">{{ s.family_b }}</a>
+        <div class="small muted">{{ s.number_a }} · {{ s.number_b }}</div></td>
+      <td>{{ s.priority_date }}</td><td class="small">{{ s.common_applicants|join:"; " }}</td>
+      <td class="small">{{ s.title_a|truncatechars:90 }}<br>{{ s.title_b|truncatechars:90 }}</td>
+      <td class="num">{{ s.title_ratio }}</td>
+      <td style="white-space:nowrap">
+        <form method="post" class="inline">{% csrf_token %}<input type="hidden" name="number_a" value="{{ s.number_a }}"><input type="hidden" name="number_b" value="{{ s.number_b }}">
+          <button class="btn sm" name="action" value="accept">unir</button>
+          <button class="btn ghost sm" name="action" value="reject">descartar</button></form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  <p class="small muted">Após aceitar, reexecute a consolidação na etapa 1.</p>
+  {% else %}<p class="muted">Nenhuma sugestão pendente.</p>{% endif %}
+</div>
+<div class="card" style="margin-top:1rem">
+  <h2>Ligações registradas ({{ links|length }})</h2>
+  <table>
+    <tr><th>ID</th><th>Número A</th><th>Número B</th><th>Justificativa</th><th>Nesta rodada</th><th></th></tr>
+    {% for l in links %}
+    <tr><td>{{ l.id }}</td><td class="mono">{{ l.number_a }}</td><td class="mono">{{ l.number_b }}</td><td class="small">{{ l.reason }}</td>
+      <td>{% if l.id in applied %}<span class="tag ok">aplicada</span>{% elif l.id in unmatched %}<span class="tag warn">números ausentes</span>{% else %}<span class="tag">já na mesma família</span>{% endif %}</td>
+      <td><form method="post" class="inline">{% csrf_token %}<input type="hidden" name="id" value="{{ l.id }}"><button class="btn danger sm" name="action" value="delete">remover</button></form></td></tr>
+    {% empty %}<tr><td colspan="6" class="muted">Nenhuma.</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

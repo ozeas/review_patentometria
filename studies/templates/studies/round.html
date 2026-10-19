@@ -1,0 +1,87 @@
+{% extends "studies/base.html" %}
+{% load pt %}
+{% block content %}
+<h1>{{ round.label }}</h1>
+<p class="lead">Coleta de {{ round.collection_date|date:"d/m/Y"|default:"data não informada" }}. Envie as exportações das bases, consolide as famílias e acompanhe o fluxo de identificação, triagem, elegibilidade e inclusão.</p>
+
+<div class="grid g2">
+  <div class="card">
+    <h2>Exportações</h2>
+    {% if files %}
+    <table>
+      <tr><th>Base</th><th>Recorte</th><th>Arquivo</th><th class="num">Registros</th><th>Consulta</th><th></th></tr>
+      {% for f in files %}
+      <tr>
+        <td>{{ f.get_source_display }}</td><td><span class="tag">{{ f.recorte }}</span></td>
+        <td class="small">{{ f.original_name }}<div class="muted">{{ f.executed_at }}{% if f.sha256 %} · sha256 {{ f.sha256|slice:":12" }}{% else %} · <span class="tag warn">sem sha256</span>{% endif %}</div></td>
+        <td class="num">{{ f.n_records }}</td>
+        <td class="small">{% if f.query_text %}<span class="tag ok">registrada</span>{% else %}<span class="tag warn">ausente</span>{% endif %} <a href="{% url 'file_edit' f.id %}">editar</a></td>
+        <td><form method="post" action="{% url 'file_delete' f.id %}" class="inline" onsubmit="return confirm('Remover este arquivo e seus registros?')">{% csrf_token %}<button class="btn danger sm">remover</button></form></td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="muted">Nenhuma exportação enviada.</p>{% endif %}
+    <h3>Enviar arquivos</h3>
+    <form method="post" enctype="multipart/form-data" action="{% url 'round_upload' round.id %}">{% csrf_token %}
+      <div class="field"><input type="file" name="files" multiple required></div>
+      <div class="row">
+        <div><label>Base</label>{{ upload.source }}</div>
+        <div><label>Recorte</label><input type="text" name="recorte" placeholder="auto"></div>
+        <div><label>Data/hora da busca</label><input type="text" name="executed_at" placeholder="15/10/2026 16h"></div>
+      </div>
+      <p class="small muted">Base e recorte são detectados pelo conteúdo e pelo nome do arquivo (ex.: <code>espacenet_BR.csv</code>). Arquivos <code>*_query.txt</code> enviados juntos são registrados como a consulta do arquivo de mesmo nome.</p>
+      <button class="btn">Enviar</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Consolidação</h2>
+    <form method="post" action="{% url 'round_run' round.id %}">{% csrf_token %}
+      <button class="btn warn" {% if not files %}disabled{% endif %}>Executar consolidação</button>
+      <span class="small muted">Última: {{ round.last_run|date:"d/m/Y H:i"|default:"nunca" }}</span>
+    </form>
+    <p class="small muted">Normaliza números, exclui modelos de utilidade, encadeia registros em famílias, aplica as ligações manuais, a regra de prevalência e os dicionários. As decisões de triagem são lidas a cada página e não exigem reexecução.</p>
+    {% if prisma %}
+    <div class="flow" style="margin-top:1rem">
+      <div class="lab">Identificação</div>
+      <div class="step">Registros identificados <b>{{ prisma.identified }}</b>
+        <div class="small muted">{% for s in sources %}{{ labels|get:s }} {{ prisma.identified_by_source|get:s }}{% if not forloop.last %} · {% endif %}{% endfor %}</div></div>
+      <div class="exc">Modelos de utilidade <b>{{ prisma.excluded_utility }}</b>
+        <div class="small">{% for s in sources %}{% with v=prisma.excluded_utility_by_source|get:s %}{% if v %}{{ labels|get:s }} {{ v }} {% endif %}{% endwith %}{% endfor %}</div></div>
+      <div class="lab">Triagem</div>
+      <div class="step">Elegíveis à deduplicação <b>{{ prisma.eligible }}</b></div>
+      <div class="exc">Redundantes (mesma família) <b>{{ prisma.redundant }}</b> ({{ prisma.redundant_pct|pct1 }}%)</div>
+      <div class="step">Base unificada <b>{{ prisma.families }}</b> famílias
+        <div class="small muted">em 4 bases {{ prisma.families_by_n_sources|get:4 }} · em 1 base {{ prisma.families_by_n_sources|get:1 }}
+          ({% for s in sources %}{{ labels|get:s }} {{ prisma.exclusive_by_source|get:s }}{% if not forloop.last %}, {% endif %}{% endfor %})</div>
+        <div class="small muted">ligações manuais aplicadas {{ prisma.manual_links_applied }}{% if prisma.manual_links_unmatched %} · <span class="tag warn">{{ prisma.manual_links_unmatched }} sem correspondência</span>{% endif %}</div></div>
+      <div></div>
+      <div class="lab">Elegibilidade</div>
+      <div class="step">Etapa 1 — mantidas <b>{{ prisma.stage1_included }}</b>
+        {% if prisma.pending_stage1 %}<div><span class="tag warn">{{ prisma.pending_stage1 }} pendentes</span> <a href="{% url 'triage' round.id '1' %}">triar</a></div>{% endif %}</div>
+      <div class="exc">Excluídas <b>{{ prisma.stage1_excluded }}</b>
+        <div class="small">{% for k, v in prisma.stage1_excluded_by_reason.items %}{{ k }} {{ v }}{% if not forloop.last %}; {% endif %}{% endfor %}</div></div>
+      <div class="step">Etapa 2 — base final <b>{{ prisma.final }}</b>
+        {% if prisma.pending_stage2 %}<div><span class="tag warn">{{ prisma.pending_stage2 }} pendentes</span> <a href="{% url 'triage' round.id '2' %}">triar</a></div>{% endif %}</div>
+      <div class="exc">Excluídas <b>{{ prisma.stage2_excluded }}</b>
+        <div class="small">{% for k, v in prisma.stage2_excluded_by_reason.items %}{{ k }} {{ v }}{% if not forloop.last %}; {% endif %}{% endfor %}</div></div>
+      <div class="lab">Inclusão</div>
+      <div class="step">Estratos
+        <div>{% for k, v in prisma.strata.items %}<span class="tag c">{{ k }} {{ v }}</span>{% endfor %}</div>
+        <div class="small muted">{% for k, v in prisma.final_by_segment.items %}{{ k }} {{ v }}{% if not forloop.last %}; {% endif %}{% endfor %}</div></div>
+    </div>
+    {% if not has_families %}<p class="tag warn">Execute a consolidação para gravar as famílias.</p>{% endif %}
+    {% if result.br %}
+    <h3>Recorte comparativo</h3>
+    <p class="small">{{ result.br.families|length }} famílias no recorte; {{ result.br.in_core }} já presentes no núcleo; {{ result.br.in_final }} na base final.</p>
+    <details><summary class="small">detalhar</summary>
+      <table class="small"><tr><th>Família</th><th>Bases</th><th>No núcleo</th><th>Final</th><th>Depositantes</th></tr>
+      {% for r in result.br.families %}<tr><td>{{ r.familia_recorte }}</td><td>{{ r.fontes|join_list:", " }}</td>
+        <td>{% for k in r.familias_nucleo %}<a href="{% url 'family' round.id k %}">{{ k }}</a> {% empty %}<span class="tag bad">não</span>{% endfor %}</td>
+        <td>{% if r.na_base_final %}<span class="tag ok">sim</span>{% else %}não{% endif %}</td><td>{{ r.depositantes|join_list }}</td></tr>{% endfor %}
+      </table></details>
+    {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

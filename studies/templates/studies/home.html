@@ -1,0 +1,28 @@
+{% extends "studies/base.html" %}
+{% block content %}
+<h1>Estudos</h1>
+<p class="lead">Cada estudo reúne a configuração da busca, as rodadas de coleta e o trabalho manual reaproveitável entre rodadas: decisões de elegibilidade, ligações manuais, dicionários de nomes e tesauro.</p>
+<div class="grid g2">
+  <div class="card">
+    <h2>Estudos existentes</h2>
+    {% if studies %}
+    <table>
+      <tr><th>Estudo</th><th class="num">Rodadas</th><th>Criado</th></tr>
+      {% for s in studies %}
+      <tr><td><a href="{% url 'study' s.id %}">{{ s.name }}</a><div class="small muted">{{ s.description|truncatechars:120 }}</div></td>
+        <td class="num">{{ s.rounds.count }}</td><td class="small">{{ s.created|date:"d/m/Y" }}</td></tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="muted">Nenhum estudo ainda.</p>{% endif %}
+  </div>
+  <div class="card">
+    <h2>Novo estudo</h2>
+    <form method="post">{% csrf_token %}
+      <div class="field"><label>Nome</label><input type="text" name="name" required style="width:100%"></div>
+      <div class="field"><label>Descrição</label><textarea name="description" rows="3"></textarea></div>
+      <button class="btn">Criar estudo</button>
+      <p class="small muted">A configuração inicial reproduz a do artigo (GC × petróleo, upstream) e pode ser editada depois.</p>
+    </form>
+  </div>
+</div>
+{% endblock %}

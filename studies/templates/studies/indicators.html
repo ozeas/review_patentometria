@@ -1,0 +1,109 @@
+{% extends "studies/base.html" %}
+{% load pt %}
+{% block content %}
+<h1>Indicadores descritivos</h1>
+<form class="row card" method="get" style="margin-bottom:1rem">
+  <label style="margin:0">Conjunto</label>
+  <select name="conjunto">
+    <option value="final" {% if subset == "final" %}selected{% endif %}>base final ({{ prisma.final }})</option>
+    <option value="etapa1" {% if subset == "etapa1" %}selected{% endif %}>após etapa 1 ({{ prisma.stage1_included }})</option>
+    <option value="unificada" {% if subset == "unificada" %}selected{% endif %}>base unificada ({{ prisma.families }})</option>
+  </select>
+  <select name="estrato"><option value="">todos os estratos</option>
+    {% for s in strata %}<option value="{{ s.code }}" {% if estrato == s.code %}selected{% endif %}>{{ s.code }} {{ s.name }}</option>{% endfor %}</select>
+  <button class="btn ghost">Atualizar</button>
+  <span class="small muted">n = {{ d.n }} famílias. Contagens indicam proteção e posicionamento, não inovação, qualidade ou valor.</span>
+</form>
+
+<div class="grid g3">
+  <div class="card">
+    <h3>Períodos de prioridade</h3>
+    <p class="small muted">Denominador: {{ d.periodos.denominador }} famílias com prioridade conhecida.</p>
+    <table>{% for r in d.periodos.linhas %}<tr><td>{{ r.categoria }}</td><td class="num">{{ r.n }}</td><td class="num">{{ r.pct|pct1 }}%</td></tr>{% endfor %}</table>
+    <p class="small muted">O último período é parcial (censura à direita até a data da coleta).</p>
+  </div>
+  <div class="card">
+    <h3>Jurisdição de origem</h3>
+    <p class="small muted">Escritório do pedido de prioridade mais antigo. Denominador: {{ d.jurisdicao_origem.denominador }}.</p>
+    <table>{% for r in d.jurisdicao_origem.linhas %}<tr><td>{{ r.categoria }}</td><td class="num">{{ r.n }}</td><td class="num">{{ r.pct|pct1 }}%</td></tr>{% endfor %}</table>
+    <p class="small muted">Fonte: {% for r in d.fonte_jurisdicao %}{{ r.categoria|default:"—" }} {{ r.n }}{% if not forloop.last %}; {% endif %}{% endfor %}</p>
+  </div>
+  <div class="card">
+    <h3>Concentração de titularidade</h3>
+    {% with c=d.grupos.concentracao %}
+    <div class="stats">
+      <div class="stat"><div class="n">{{ c.CR4|pct1 }}%</div><div class="l">CR4</div></div>
+      <div class="stat"><div class="n">{{ c.CR8|pct1 }}%</div><div class="l">CR8</div></div>
+      <div class="stat"><div class="n">{{ c.HHI|floatformat:0 }}</div><div class="l">HHI</div></div>
+      <div class="stat"><div class="n">{{ c.Gini|floatformat:3 }}</div><div class="l">Gini</div></div>
+    </div>
+    <p class="small muted">{{ c.grupos }} grupos econômicos; {{ c.atribuicoes }} atribuições (cada família contada para todos os seus grupos).</p>
+    {% endwith %}
+  </div>
+</div>
+
+<div class="grid g2" style="margin-top:1.2rem">
+  <div class="card">
+    <h3>Principais grupos econômicos</h3>
+    <p class="small muted">Denominador: {{ d.grupos.denominador }} famílias; percentuais não somam 100%.</p>
+    <table>{% for r in d.grupos.linhas %}<tr><td>{{ r.categoria }}</td><td class="num">{{ r.n }}</td><td class="num">{{ r.pct|pct1 }}%</td></tr>{% endfor %}</table>
+  </div>
+  <div class="card">
+    <h3>Principais inventores</h3>
+    <table>{% for r in d.inventores.linhas %}<tr><td>{{ r.categoria }}</td><td class="num">{{ r.n }}</td><td class="num">{{ r.pct|pct1 }}%</td></tr>{% endfor %}</table>
+  </div>
+  <div class="card">
+    <h3>Subclasses IPC</h3>
+    <p class="small muted">Denominador: {{ d.ipc_subclasses.denominador }} famílias com IPC.</p>
+    <table>{% for r in d.ipc_subclasses.linhas %}<tr><td class="mono">{{ r.categoria }}</td><td class="num">{{ r.n }}</td><td class="num">{{ r.pct|pct1 }}%</td></tr>{% endfor %}</table>
+  </div>
+  <div class="card">
+    <h3>Grupos principais IPC</h3>
+    <table>{% for r in d.ipc_grupos.linhas %}<tr><td class="mono">{{ r.categoria }}</td><td class="num">{{ r.n }}</td><td class="num">{{ r.pct|pct1 }}%</td></tr>{% endfor %}</table>
+    {% if d.bloco_classificacao %}
+    <h3>Bloco de classificação</h3>
+    <table class="small"><tr><th>Código</th><th class="num">Com o código</th><th class="num">Só este código</th></tr>
+      {% for r in d.bloco_classificacao.linhas %}<tr><td class="mono">{{ r.codigo }}</td><td class="num">{{ r.n_com_codigo }}</td><td class="num">{{ r.n_exclusivo }}</td></tr>{% endfor %}</table>
+    <p class="small muted">{{ d.bloco_classificacao.sem_ipc }} famílias sem IPC exportada (contribuição possivelmente subestimada).</p>
+    {% endif %}
+  </div>
+  <div class="card">
+    <h3>Anterioridade</h3>
+    <dl class="kv">
+      <dt>Janela recente</dt><dd>{{ d.janela_recente.n }} de {{ d.janela_recente.denominador }} ({{ d.janela_recente.pct|pct1 }}%)</dd>
+      <dt>Situação jurídica</dt><dd>{% for r in d.situacao_juridica.linhas %}{{ r.categoria }} {{ r.n }} ({{ r.pct|pct1 }}%){% if not forloop.last %}; {% endif %}{% endfor %}
+        <div class="small muted">Denominador: {{ d.situacao_juridica.denominador }} famílias com registro na Lens. Vigentes: limite superior.</div></dd>
+      <dt>Citações recebidas</dt><dd>{% with c=d.citacoes %}{% if c.n_com_dado %}{{ c.n_citadas }} de {{ c.n_com_dado }} famílias citadas ({{ c.pct_citadas|pct1 }}%); média {{ c.media|floatformat:2 }}; mediana {{ c.mediana }}; máximo {{ c.maximo }}
+        <div class="small muted">Lens; maior valor entre as publicações da família.</div>{% else %}sem dado{% endif %}{% endwith %}</dd>
+      <dt>Rede interna (Derwent)</dt><dd>{{ d.rede_citacoes_internas.arestas }} citações entre {{ d.rede_citacoes_internas.familias_envolvidas }} famílias</dd>
+      <dt>Nível lexical</dt><dd>{% for k, v in lex.items %}{{ k }} {{ v }}{% if not forloop.last %}; {% endif %}{% endfor %}</dd>
+      <dt>Resumo usado</dt><dd>{% for r in d.tipo_resumo %}{{ r.categoria }} {{ r.n }}{% if not forloop.last %}; {% endif %}{% endfor %}</dd>
+    </dl>
+  </div>
+  <div class="card">
+    <h3>Famílias mais citadas</h3>
+    <table class="small">{% for r in d.citacoes_top %}<tr><td class="mono"><a href="{% url 'family' round.id r.familia %}">{{ r.familia }}</a></td><td>{{ r.titulo|truncatechars:70 }}</td><td class="num">{{ r.citacoes }}</td></tr>{% endfor %}</table>
+  </div>
+</div>
+
+{% if by_stratum %}
+<h2>Recálculo por estrato</h2>
+<div class="grid g3">
+  {% for b in by_stratum %}
+  <div class="card">
+    <h3>{{ b.s.code }} {{ b.s.name }} <span class="muted">n = {{ b.n }}</span></h3>
+    <p class="small muted">{{ b.s.definition }}</p>
+    <table class="small">
+      {% for r in b.periodos %}<tr><td>{{ r.categoria }}</td><td class="num">{{ r.n }}</td><td class="num">{{ r.pct|pct1 }}%</td></tr>{% endfor %}
+      <tr><th colspan="3">Jurisdição de origem</th></tr>
+      {% for r in b.jur %}<tr><td>{{ r.categoria }}</td><td class="num">{{ r.n }}</td><td class="num">{{ r.pct|pct1 }}%</td></tr>{% endfor %}
+      <tr><th colspan="3">Grupos</th></tr>
+      {% for r in b.grupos %}<tr><td>{{ r.categoria }}</td><td class="num">{{ r.n }}</td><td class="num">{{ r.pct|pct1 }}%</td></tr>{% endfor %}
+      <tr><th colspan="3">Grupos IPC</th></tr>
+      {% for r in b.ipc %}<tr><td class="mono">{{ r.categoria }}</td><td class="num">{{ r.n }}</td><td class="num">{{ r.pct|pct1 }}%</td></tr>{% endfor %}
+    </table>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

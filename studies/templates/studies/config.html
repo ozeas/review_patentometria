@@ -1,0 +1,19 @@
+{% extends "studies/base.html" %}
+{% block content %}
+<h1>Configuração do estudo</h1>
+<p class="lead">Blocos lexicais, códigos do bloco de classificação, regra de prevalência, períodos, janela recente, categorias da triagem e estratos. A data da coleta da rodada substitui <code>collection_date</code>.</p>
+<form method="post">{% csrf_token %}
+  {{ form.config.errors }}
+  {{ form.config }}
+  <p><button class="btn">Salvar</button> <a class="btn ghost" href="{% url 'study' study.id %}">Cancelar</a></p>
+</form>
+<div class="card small">
+  <b>Chaves principais</b>
+  <ul>
+    <li><code>prevalence</code>: ordem das bases por campo (publications, title, abstract, ipc, cpc, applicants, inventors, priority_number).</li>
+    <li><code>prio_link_min_digits</code>: prioridades com menos dígitos não entram no encadeamento (evita colisão de números Derwent sem ano).</li>
+    <li><code>utility_kinds</code>: códigos de tipo tratados como modelo de utilidade.</li>
+    <li><code>core_recorte</code>: rótulo do conjunto principal; os demais recortes (ex.: BR) são comparados a ele.</li>
+  </ul>
+</div>
+{% endblock %}

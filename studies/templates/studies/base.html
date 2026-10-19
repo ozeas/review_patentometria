@@ -1,0 +1,39 @@
+{% load static %}<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Patentometria{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'studies/app.css' %}">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="{% url 'home' %}">Patentometria</a>
+    <span class="crumbs">
+      {% if study %}<a href="{% url 'study' study.id %}">{{ study.name }}</a>{% endif %}
+      {% if round %} › <a href="{% url 'round' round.id %}">{{ round.label }}</a>{% endif %}
+    </span>
+  </div>
+</header>
+{% if round %}
+<nav class="sub"><div class="wrap">
+  {% with n=request.resolver_match.url_name %}
+  <a href="{% url 'round' round.id %}" class="{% if n == 'round' %}on{% endif %}">1 · Coleta e consolidação</a>
+  <a href="{% url 'links' round.id %}" class="{% if n == 'links' %}on{% endif %}">2 · Ligações</a>
+  <a href="{% url 'dict_applicants' round.id %}" class="{% if n == 'dict_applicants' or n == 'dict_inventors' %}on{% endif %}">3 · Nomes</a>
+  <a href="{% url 'families' round.id %}" class="{% if n == 'families' or n == 'family' %}on{% endif %}">4 · Famílias e triagem</a>
+  <a href="{% url 'indicators' round.id %}" class="{% if n == 'indicators' %}on{% endif %}">5 · Indicadores</a>
+  <a href="{% url 'vos' round.id %}" class="{% if n == 'vos' %}on{% endif %}">6 · VOSviewer</a>
+  <a href="{% url 'import' round.id %}" class="{% if n == 'import' %}on{% endif %}">Importar</a>
+  <a href="{% url 'export_xlsx' round.id %}">Planilha base ↓</a>
+  {% endwith %}
+</div></nav>
+{% endif %}
+<main>
+  {% if messages %}<ul class="msgs">{% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}</ul>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<footer>Aplicação local · dados em SQLite · contagens são indicadores de proteção e posicionamento, não medidas de inovação.</footer>
+</body>
+</html>

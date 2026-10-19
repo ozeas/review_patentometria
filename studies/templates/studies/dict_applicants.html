@@ -1,0 +1,33 @@
+{% extends "studies/base.html" %}
+{% block content %}
+<div class="row" style="justify-content:space-between">
+  <h1>Harmonização de depositantes</h1>
+  <a class="btn ghost" href="{% url 'dict_inventors' round.id %}">Inventores →</a>
+</div>
+<p class="lead">Grafias exportadas na base de prevalência de cada família. Informe o nome harmonizado e o grupo econômico (ex.: PetroChina, China National Petroleum Corporation e Daqing Oilfield → CNPC). Grafias em chinês recebem aqui o nome oficial ou usual em inglês. Sem grupo informado, o nome harmonizado é o grupo.</p>
+<form class="row card" method="get" style="margin-bottom:1rem">
+  <select name="filtro">
+    <option value="">todas ({{ total }})</option>
+    <option value="pendentes" {% if filtro == "pendentes" %}selected{% endif %}>sem harmonização</option>
+    <option value="cjk" {% if filtro == "cjk" %}selected{% endif %}>grafias em chinês</option>
+  </select>
+  <input type="search" name="q" value="{{ q }}" placeholder="buscar grafia ou grupo">
+  <button class="btn ghost">Filtrar</button>
+</form>
+<datalist id="groups">{% for g in groups %}<option value="{{ g }}">{% endfor %}</datalist>
+<form method="post">{% csrf_token %}
+  <table>
+    <tr><th>Grafia exportada</th><th class="num">Famílias</th><th>Nome harmonizado</th><th>Grupo econômico</th></tr>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.raw }}<input type="hidden" name="raw_{{ forloop.counter }}" value="{{ r.raw }}">
+        <div class="small muted">{{ r.families|slice:":8"|join:" " }}{% if r.n > 8 %} …{% endif %}</div></td>
+      <td class="num">{{ r.n }}</td>
+      <td><input type="text" name="h_{{ forloop.counter }}" value="{{ r.harmonized }}" style="width:100%"></td>
+      <td><input type="text" name="g_{{ forloop.counter }}" value="{{ r.group }}" list="groups" style="width:100%"></td>
+    </tr>
+    {% endfor %}
+  </table>
+  <p><button class="btn">Salvar alterações</button> <span class="small muted">Somente linhas com nome ou grupo preenchido são gravadas. Reexecute a consolidação depois.</span></p>
+</form>
+{% endblock %}

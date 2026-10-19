@@ -1,0 +1,111 @@
+{% extends "studies/base.html" %}
+{% load pt %}
+{% block title %}{{ f.key }} · Patentometria{% endblock %}
+{% block content %}
+<div class="row" style="justify-content:space-between;margin-bottom:.6rem">
+  <div class="row small">
+    {% if prev %}<a href="{% url 'family' round.id prev %}{% if mode %}?triagem={{ mode }}{% endif %}">← {{ prev }}</a>{% endif %}
+    <a href="{% url 'families' round.id %}">lista</a>
+    {% if next %}<a href="{% url 'family' round.id next %}{% if mode %}?triagem={{ mode }}{% endif %}">{{ next }} →</a>{% endif %}
+    {% if mode %}<span class="tag c">modo triagem — etapa {{ mode }}</span>{% if pending %}<a href="{% url 'family' round.id pending %}?triagem={{ mode }}">próxima pendente: {{ pending }}</a>{% endif %}{% endif %}
+  </div>
+  <div class="small muted">âncora {{ f.anchor }}</div>
+</div>
+<div class="grid" style="grid-template-columns:minmax(0,2.2fr) minmax(300px,1fr);align-items:start">
+<div>
+  <h1><span class="mono muted">{{ f.key }}</span> {{ hl_title }}</h1>
+  <div class="row small" style="margin-bottom:.6rem">
+    {% for s in x.sources %}<span class="tag src">{{ s|source_label }}</span>{% endfor %}
+    <span class="tag">{{ x.n_records }} registros</span>
+    <span class="tag {% if lex.level == 'titulo' %}ok{% elif lex.level == 'ausente' %}bad{% else %}warn{% endif %}">lexical: {{ lex.level }}</span>
+    {% if x.recent_window %}<span class="tag c">janela recente</span>{% endif %}
+  </div>
+  <div class="card">
+    <h3>Resumo <span class="small muted">({{ x.abstract_kind }}{% if o.abstract %} · {{ o.abstract|source_label }}{% endif %})</span></h3>
+    <div class="abstract">{{ hl_abs|default:"<span class='muted'>sem resumo nas exportações</span>" }}</div>
+    {% if x.dwpi_novelty_use and x.abstract_kind == "original" %}
+    <details style="margin-top:.6rem"><summary class="small">DWPI (NOVELTY + USE)</summary><p class="small">{{ x.dwpi_novelty_use }}</p></details>{% endif %}
+  </div>
+  <div class="card" style="margin-top:1rem">
+    <h3>Campos consolidados <span class="small muted">(base de origem entre parênteses)</span></h3>
+    <dl class="kv">
+      <dt>Depositantes</dt><dd>{{ x.applicants|join_list }} <span class="muted small">({{ o.applicants|source_label }})</span>
+        {% if x.applicants_unmapped %}<div class="small"><span class="tag warn">sem harmonização</span> {{ x.applicants_unmapped|join_list }}</div>{% endif %}</dd>
+      <dt>Grupos econômicos</dt><dd>{% for g in x.groups %}<span class="tag">{{ g }}</span>{% endfor %}</dd>
+      <dt>Inventores</dt><dd class="small">{{ x.inventors|join_list }} <span class="muted">({{ o.inventors|source_label }})</span>
+        {% if x.inventors_pinyin %}<div><span class="tag warn">pinyin automático</span> {{ x.inventors_pinyin|join_list }}</div>{% endif %}</dd>
+      <dt>Prioridade mais antiga</dt><dd>{{ x.earliest_priority|default:"—" }} · período {{ x.period }}</dd>
+      <dt>Jurisdição de origem</dt><dd>{{ x.origin_jurisdiction|default:"—" }} <span class="muted small">({{ o.origin_jurisdiction|default:"—" }}: {{ x.origin_priority_number|default:"" }})</span></dd>
+      <dt>1ª publicação</dt><dd>{{ x.first_publication|default:"—" }}</dd>
+      <dt>IPC</dt><dd class="mono">{{ x.ipc|join_list }} <span class="muted">({{ o.ipc|source_label }})</span></dd>
+      <dt>CPC</dt><dd class="mono small">{{ x.cpc|join_list|default:"—" }}</dd>
+      <dt>Bloco de classificação</dt><dd>{% for k, v in x.block_class_hits.items %}<span class="tag {% if v %}ok{% endif %}">{{ k }}</span>{% endfor %} <span class="small muted">(IPC exportadas, todas as bases)</span></dd>
+      <dt>Situação jurídica</dt><dd>{{ x.legal_status|default:"sem registro na Lens" }} {% if x.legal_status_raw %}<span class="small muted">({{ x.legal_status_raw|join_list }})</span>{% endif %}</dd>
+      <dt>Citações recebidas</dt><dd>{{ x.cited_by_max|default_if_none:"—" }} <span class="small muted">(Lens, máximo entre publicações)</span></dd>
+      <dt>Publicações</dt><dd class="mono small">{{ x.all_numbers|join_list:" " }}</dd>
+    </dl>
+  </div>
+  <div class="card" style="margin-top:1rem">
+    <h3>Termos dos blocos lexicais</h3>
+    <table class="small"><tr><th>Bloco</th><th>No título</th><th>No título + resumo</th></tr>
+    {% for b, hits in lex.title_abstract_hits.items %}<tr><td>{{ b }}</td><td>{{ lex.title_hits|get:b|join_list:", "|default:"—" }}</td><td>{{ hits|join_list:", "|default:"—" }}</td></tr>{% endfor %}
+    </table>
+  </div>
+  <div class="card" style="margin-top:1rem">
+    <h3>Registros de origem</h3>
+    <table class="small">
+      <tr><th>Base</th><th>Linha</th><th>Números</th><th>Título exportado</th><th>Prioridade</th></tr>
+      {% for r in records %}<tr><td>{{ r.source|source_label }}</td><td class="num">{{ r.row }}</td>
+        <td class="mono">{% for p in r.data.pubs %}{{ p.raw }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+        <td>{{ r.data.title|default:r.data.dwpi_title|truncatechars:90 }}</td><td>{{ r.data.earliest_priority|default:"" }}</td></tr>{% endfor %}
+    </table>
+    <details style="margin-top:.6rem"><summary class="small">registrar ligação manual com outra família</summary>
+      <form method="post" class="row" style="margin-top:.5rem">{% csrf_token %}<input type="hidden" name="action" value="link">
+        <input type="text" name="other" placeholder="número de publicação da outra família" required>
+        <input type="text" name="reason" placeholder="justificativa" style="min-width:280px">
+        <button class="btn sm">registrar</button></form>
+    </details>
+  </div>
+</div>
+
+<div class="card triage">
+  <h2>Elegibilidade</h2>
+  <form method="post">{% csrf_token %}<input type="hidden" name="action" value="decision">
+    <label><b>Etapa 1</b> — {{ cfg.stage1.label }}</label>
+    <div class="choice">
+      <label><input type="radio" name="stage1" value="" {% if not d.stage1 %}checked{% endif %}> pendente</label>
+      <label><input type="radio" name="stage1" value="incluir" {% if d.stage1 == "incluir" %}checked{% endif %}> manter</label>
+      <label><input type="radio" name="stage1" value="excluir" {% if d.stage1 == "excluir" %}checked{% endif %}> excluir</label>
+    </div>
+    <div class="choice">{% for r in cfg.stage1.exclusion_reasons %}
+      <label><input type="radio" name="stage1_reason" value="{{ r }}" {% if d.stage1_reason == r %}checked{% endif %}> {{ r }}</label>{% endfor %}
+    </div>
+    <hr style="border:0;border-top:1px solid var(--rule);margin:.8rem 0">
+    <label><b>Etapa 2</b> — {{ cfg.stage2.label }}</label>
+    <div class="choice">
+      <label><input type="radio" name="stage2" value="" {% if not d.stage2 %}checked{% endif %}> pendente</label>
+      <label><input type="radio" name="stage2" value="incluir" {% if d.stage2 == "incluir" %}checked{% endif %}> manter</label>
+      <label><input type="radio" name="stage2" value="excluir" {% if d.stage2 == "excluir" %}checked{% endif %}> excluir</label>
+    </div>
+    <div class="small muted">segmento (manter)</div>
+    <div class="choice">{% for r in cfg.stage2.inclusion_segments %}
+      <label><input type="radio" name="stage2_reason" value="{{ r }}" {% if d.stage2_reason == r %}checked{% endif %}> {{ r }}</label>{% endfor %}</div>
+    <div class="small muted">motivo (excluir)</div>
+    <div class="choice">{% for r in cfg.stage2.exclusion_reasons %}
+      <label><input type="radio" name="stage2_reason" value="{{ r }}" {% if d.stage2_reason == r %}checked{% endif %}> {{ r }}</label>{% endfor %}</div>
+    <hr style="border:0;border-top:1px solid var(--rule);margin:.8rem 0">
+    <label><b>Estrato</b></label>
+    <div class="choice">
+      <label><input type="radio" name="stratum" value="" {% if not d.stratum %}checked{% endif %}> —</label>
+      {% for s in cfg.strata %}<label title="{{ s.definition }}"><input type="radio" name="stratum" value="{{ s.code }}" {% if d.stratum == s.code %}checked{% endif %}> {{ s.code }} {{ s.name }}</label>{% endfor %}
+    </div>
+    <div class="field"><label>Observações</label><textarea name="notes" rows="2">{{ d.notes }}</textarea></div>
+    <div class="row">
+      <button class="btn" name="go" value="next">Salvar e avançar</button>
+      <button class="btn ghost" name="go" value="stay">Salvar</button>
+    </div>
+    {% if d %}<p class="small muted">Decisão ancorada em {{ d.numbers|length }} números · atualizada {{ d.updated|date:"d/m/Y H:i" }}</p>{% endif %}
+  </form>
+</div>
+</div>
+{% endblock %}

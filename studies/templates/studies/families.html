@@ -1,0 +1,54 @@
+{% extends "studies/base.html" %}
+{% load pt %}
+{% block content %}
+<h1>Famílias consolidadas</h1>
+<div class="row" style="margin-bottom:1rem">
+  <a class="btn" href="{% url 'triage' round.id '1' %}">Triar etapa 1 ({{ counts.pendente1|default:0 }})</a>
+  <a class="btn" href="{% url 'triage' round.id '2' %}">Triar etapa 2 ({{ counts.pendente2|default:0 }})</a>
+  <a class="btn ghost" href="{% url 'triage' round.id '3' %}">Atribuir estratos</a>
+  <a class="btn ghost" href="{% url 'export_decisions' round.id %}">Decisões (CSV)</a>
+</div>
+<form class="row card" method="get" style="margin-bottom:1rem">
+  <input type="search" name="q" value="{{ q }}" placeholder="título, número, grupo, F001">
+  <select name="status">
+    <option value="">todas as situações</option>
+    <option value="pendente1" {% if status == "pendente1" %}selected{% endif %}>pendente etapa 1 ({{ counts.pendente1|default:0 }})</option>
+    <option value="excluida1" {% if status == "excluida1" %}selected{% endif %}>excluída etapa 1 ({{ counts.excluida1|default:0 }})</option>
+    <option value="pendente2" {% if status == "pendente2" %}selected{% endif %}>pendente etapa 2 ({{ counts.pendente2|default:0 }})</option>
+    <option value="excluida2" {% if status == "excluida2" %}selected{% endif %}>excluída etapa 2 ({{ counts.excluida2|default:0 }})</option>
+    <option value="final" {% if status == "final" %}selected{% endif %}>base final ({{ counts.final|default:0 }})</option>
+  </select>
+  <select name="estrato"><option value="">todos os estratos</option>
+    {% for s in strata %}<option value="{{ s.code }}" {% if estrato == s.code %}selected{% endif %}>{{ s.code }} {{ s.name }}</option>{% endfor %}</select>
+  <select name="bases"><option value="">nº de bases</option>{% for n in "1234" %}<option value="{{ n }}" {% if request.GET.bases == n %}selected{% endif %}>{{ n }}</option>{% endfor %}</select>
+  <button class="btn ghost">Filtrar</button>
+</form>
+<table>
+  <tr><th>Família</th><th>Título</th><th>Bases</th><th class="num">Ano</th><th>Origem</th><th>Grupos</th><th>Situação</th></tr>
+  {% for r in page %}
+  {% with f=r.f d=r.d %}
+  <tr>
+    <td class="mono"><a href="{% url 'family' round.id f.key %}">{{ f.key }}</a></td>
+    <td>{{ f.title|truncatechars:110 }}</td>
+    <td>{% for s in f.fields.sources %}<span class="tag src" title="{{ s|source_label }}">{{ s|source_short }}</span>{% endfor %}</td>
+    <td class="num">{{ f.fields.priority_year|default:"—" }}</td>
+    <td>{{ f.fields.origin_jurisdiction|default:"—" }}</td>
+    <td class="small">{{ f.fields.groups|join_list|truncatechars:60 }}</td>
+    <td class="small">
+      {% if r.status == "pendente1" %}<span class="tag warn">pendente</span>
+      {% elif r.status == "excluida1" %}<span class="tag bad">E1: {{ d.stage1_reason }}</span>
+      {% elif r.status == "pendente2" %}<span class="tag warn">E1 ok · E2 pendente</span>
+      {% elif r.status == "excluida2" %}<span class="tag bad">E2: {{ d.stage2_reason }}</span>
+      {% else %}<span class="tag ok">{{ d.stage2_reason }}</span>{% if d.stratum %}<span class="tag c">{{ d.stratum }}</span>{% endif %}{% endif %}
+    </td>
+  </tr>
+  {% endwith %}
+  {% empty %}<tr><td colspan="7" class="muted">Nenhuma família. Execute a consolidação na etapa 1.</td></tr>
+  {% endfor %}
+</table>
+<div class="pager small">
+  {% if page.has_previous %}<a href="?{{ querystring }}&page={{ page.previous_page_number }}">← anterior</a>{% endif %}
+  <span>página {{ page.number }} de {{ page.paginator.num_pages }} · {{ page.paginator.count }} famílias</span>
+  {% if page.has_next %}<a href="?{{ querystring }}&page={{ page.next_page_number }}">próxima →</a>{% endif %}
+</div>
+{% endblock %}

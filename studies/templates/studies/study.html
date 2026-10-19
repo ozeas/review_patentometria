@@ -1,0 +1,56 @@
+{% extends "studies/base.html" %}
+{% block content %}
+<h1>{{ study.name }}</h1>
+<p class="lead">{{ study.description }}</p>
+<div class="grid g2">
+  <div class="card">
+    <h2>Rodadas de coleta</h2>
+    {% if study.rounds.all %}
+    <table>
+      <tr><th>Rodada</th><th>Coleta</th><th class="num">Arquivos</th><th class="num">Famílias</th><th>Última execução</th></tr>
+      {% for r in study.rounds.all %}
+      <tr><td><a href="{% url 'round' r.id %}">{{ r.label }}</a></td><td>{{ r.collection_date|date:"d/m/Y" }}</td>
+        <td class="num">{{ r.files.count }}</td><td class="num">{{ r.families.count }}</td>
+        <td class="small">{{ r.last_run|date:"d/m/Y H:i"|default:"—" }}</td></tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="muted">Nenhuma rodada.</p>{% endif %}
+    <h3>Nova rodada</h3>
+    <form method="post" class="row">{% csrf_token %}
+      <input type="text" name="label" placeholder="Rótulo (ex.: rodada 15/10/2026)" required>
+      <input type="date" name="collection_date">
+      <button class="btn">Criar</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2>Trabalho reaproveitável</h2>
+    <div class="stats">
+      <div class="stat"><div class="n">{{ counts.decisoes }}</div><div class="l">decisões de elegibilidade</div></div>
+      <div class="stat"><div class="n">{{ counts.ligacoes }}</div><div class="l">ligações manuais</div></div>
+      <div class="stat"><div class="n">{{ counts.depositantes }}</div><div class="l">grafias de depositantes</div></div>
+      <div class="stat"><div class="n">{{ counts.inventores }}</div><div class="l">inventores padronizados</div></div>
+      <div class="stat"><div class="n">{{ counts.tesauro }}</div><div class="l">entradas do tesauro</div></div>
+    </div>
+    <p class="small muted">Decisões e ligações são ancoradas em números de publicação normalizados: uma nova rodada herda o que já foi decidido para as mesmas famílias.</p>
+    <div class="row">
+      <a class="btn ghost" href="{% url 'thesaurus' study.id %}">Tesauro</a>
+      <a class="btn ghost" href="{% url 'export_dict' study.id 'depositantes' %}">Depositantes (CSV)</a>
+      <a class="btn ghost" href="{% url 'export_dict' study.id 'inventores' %}">Inventores (CSV)</a>
+      <a class="btn ghost" href="{% url 'export_dict' study.id 'ligacoes' %}">Ligações (CSV)</a>
+    </div>
+  </div>
+</div>
+<div class="card" style="margin-top:1.2rem">
+  <h2>Configuração</h2>
+  <dl class="kv">
+    <dt>Blocos lexicais</dt><dd>{% for b in cfg.blocks %}<div><b>{{ b.name }}</b>: {{ b.terms|join:", " }}</div>{% endfor %}</dd>
+    <dt>Bloco de classificação</dt><dd>{{ cfg.classification_block|join:" OR " }}</dd>
+    <dt>Períodos</dt><dd>{% for p in cfg.periods %}{{ p.0 }}–{{ p.1 }}{% if not forloop.last %}; {% endif %}{% endfor %}</dd>
+    <dt>Janela recente</dt><dd>{{ cfg.window_months }} meses</dd>
+    <dt>Etapa 1</dt><dd>{{ cfg.stage1.label }} — exclusões: {{ cfg.stage1.exclusion_reasons|join:"; " }}</dd>
+    <dt>Etapa 2</dt><dd>{{ cfg.stage2.label }} — segmentos: {{ cfg.stage2.inclusion_segments|join:"; " }}; exclusões: {{ cfg.stage2.exclusion_reasons|join:"; " }}</dd>
+    <dt>Estratos</dt><dd>{% for s in cfg.strata %}<div><b>{{ s.code }}</b> {{ s.name }} — {{ s.definition }}</div>{% endfor %}</dd>
+  </dl>
+  <p><a class="btn ghost" href="{% url 'study_config' study.id %}">Editar configuração (JSON)</a></p>
+</div>
+{% endblock %}

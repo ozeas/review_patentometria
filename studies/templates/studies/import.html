@@ -1,0 +1,27 @@
+{% extends "studies/base.html" %}
+{% block content %}
+<h1>Importar trabalho manual</h1>
+<p class="lead">Traga decisões, dicionários e ligações de uma planilha anterior ou de outro estudo. Os cabeçalhos são reconhecidos por nome, sem distinção de maiúsculas e acentos.</p>
+<div class="grid g2">
+  <div class="card">
+    <h2>Decisões de elegibilidade</h2>
+    <p class="small">Colunas: <code>Números</code> (um ou mais números de publicação), <code>Etapa 1</code> (incluir/excluir), <code>Motivo etapa 1</code>, <code>Etapa 2</code>, <code>Segmento/motivo etapa 2</code>, <code>Estrato</code>, <code>Observações</code>. O CSV de <a href="{% url 'export_decisions' round.id %}">decisões desta rodada</a> serve de modelo.</p>
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}<input type="hidden" name="kind" value="decisoes">{{ form.file }} <button class="btn sm">Importar</button></form>
+  </div>
+  <div class="card">
+    <h2>Depositantes</h2>
+    <p class="small">Colunas: <code>Grafia exportada</code>, <code>Nome harmonizado</code>, <code>Grupo econômico</code>.</p>
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}<input type="hidden" name="kind" value="depositantes">{{ form.file }} <button class="btn sm">Importar</button></form>
+  </div>
+  <div class="card">
+    <h2>Inventores</h2>
+    <p class="small">Colunas: <code>Grafia exportada</code>, <code>Forma padronizada</code>.</p>
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}<input type="hidden" name="kind" value="inventores">{{ form.file }} <button class="btn sm">Importar</button></form>
+  </div>
+  <div class="card">
+    <h2>Ligações manuais</h2>
+    <p class="small">Colunas: <code>Número A</code>, <code>Número B</code>, <code>Justificativa</code>.</p>
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}<input type="hidden" name="kind" value="ligacoes">{{ form.file }} <button class="btn sm">Importar</button></form>
+  </div>
+</div>
+{% endblock %}

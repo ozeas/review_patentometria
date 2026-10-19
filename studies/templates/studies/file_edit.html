@@ -1,0 +1,10 @@
+{% extends "studies/base.html" %}
+{% block content %}
+<h1>{{ sf.get_source_display }} · {{ sf.recorte }}</h1>
+<p class="lead">{{ sf.original_name }} — {{ sf.n_records }} registros.</p>
+<form method="post" class="card">{% csrf_token %}
+  <div class="field"><label>Consulta registrada</label>{{ form.query_text }}</div>
+  <div class="field"><label>Data/hora da busca</label>{{ form.executed_at }}</div>
+  <button class="btn">Salvar</button>
+</form>
+{% endblock %}
