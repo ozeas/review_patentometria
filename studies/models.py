@@ -68,7 +68,13 @@ class SourceFile(models.Model):
     file = models.FileField("arquivo", upload_to=upload_path)
     original_name = models.CharField(max_length=255, blank=True)
     sha256 = models.CharField("sha256 do arquivo", max_length=64, blank=True, db_index=True)
-    query_text = models.TextField("consulta registrada", blank=True)
+    query_text = models.TextField(
+        "consulta registrada (declarada)", blank=True,
+        help_text="Colada pelo analista do histórico da base. Nunca preenchida a partir do arquivo de resultado.")
+    query_no_arquivo = models.TextField(
+        "consulta lida do arquivo", blank=True,
+        help_text="Texto que a exportação imprime no cabeçalho — evidência, não registro.")
+    query_no_arquivo_em = models.DateTimeField("lida do arquivo em", null=True, blank=True)
     executed_at = models.CharField("data/hora da busca", max_length=60, blank=True)
     n_records = models.PositiveIntegerField(default=0)
     uploaded = models.DateTimeField(auto_now_add=True)
@@ -79,6 +85,11 @@ class SourceFile(models.Model):
 
     def __str__(self):
         return f"{self.get_source_display()} [{self.recorte}] {self.original_name}"
+
+    @property
+    def consulta_extraida(self) -> bool:
+        """Há texto lido do arquivo (evidência) — não confundir com consulta declarada."""
+        return bool(self.query_no_arquivo.strip())
 
 
 class Record(models.Model):

@@ -11,6 +11,7 @@ import tempfile
 from datetime import date
 from pathlib import Path
 
+from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase
@@ -175,3 +176,28 @@ class BackupDoTrabalhoTests(TestCase):
                      substituir=True, stdout=io.StringIO())
         self.assertEqual(self.study.manual_links.count(), 1)
         self.assertEqual(self.study.manual_links.get().number_a, "CN101413931")
+
+
+class ConsultaSeparadaTests(TestCase):
+    """A consulta registrada é declarada; o texto do arquivo é evidência."""
+
+    def setUp(self):
+        self.study = m.Study.objects.create(name="Consulta")
+        self.rnd = m.Round.objects.create(study=self.study, label="r1", collection_date=date(2026, 10, 15))
+
+    def test_ingestao_nao_le_consulta_do_arquivo(self):
+        raw = (FIX / "espacenet_sample.csv").read_bytes()
+        sf = services.ingest(self.rnd, SimpleUploadedFile("espacenet_nucleo.csv", raw))
+        self.assertEqual(sf.query_text, "")
+        self.assertEqual(sf.query_no_arquivo, "")
+
+    def test_campos_de_consulta_sao_independentes(self):
+        sf = services.ingest(self.rnd, SimpleUploadedFile("lens_nucleo.csv",
+                                                          (FIX / "lens_sample.csv").read_bytes()))
+        sf.query_text = "G01N30 AND oil"
+        sf.query_no_arquivo = '(ipc =/low "G01N" OR ipc =/low "C10G")'
+        sf.save()
+        sf.refresh_from_db()
+        self.assertEqual(sf.query_text, "G01N30 AND oil")
+        self.assertEqual(sf.query_no_arquivo, '(ipc =/low "G01N" OR ipc =/low "C10G")')
+        self.assertTrue(sf.consulta_extraida)
