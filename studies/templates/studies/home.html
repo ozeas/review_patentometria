@@ -20,8 +20,15 @@
     <form method="post">{% csrf_token %}
       <div class="field"><label>Nome</label><input type="text" name="name" required style="width:100%"></div>
       <div class="field"><label>Descrição</label><textarea name="description" rows="3"></textarea></div>
+      <div class="field"><label>Configuração inicial</label>
+        <select name="preset" style="width:100%">
+          <option value="">padrão (cromatografia × petróleo)</option>
+          {% for p in presets %}<option value="{{ p.name }}">{{ p.stem }}</option>{% endfor %}
+        </select>
+      </div>
       <button class="btn">Criar estudo</button>
-      <p class="small muted">A configuração inicial reproduz a do artigo (GC × petróleo, upstream) e pode ser editada depois.</p>
+      <p class="small muted">Sem preset, a configuração inicial reproduz a do artigo (GC × petróleo, upstream).
+        Com preset, o estudo nasce com o tema do modelo — e pode ser editado depois.</p>
     </form>
   </div>
 </div>

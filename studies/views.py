@@ -24,12 +24,21 @@ def home(request):
     if request.method == "POST":
         form = forms.StudyForm(request.POST)
         if form.is_valid():
-            s = form.save()
-            messages.success(request, "Estudo criado com a configuração padrão (GC × petróleo, upstream).")
+            s = form.save(commit=False)
+            escolha = form.cleaned_data.get("preset")
+            if escolha:
+                from core.presets import DIR_PADRAO, carregar_preset
+                s.config = carregar_preset(DIR_PADRAO / escolha)
+                messages.success(request, f"Estudo criado a partir do preset {escolha}.")
+            else:
+                messages.success(request, "Estudo criado com a configuração padrão.")
+            s.save()
             return redirect("study", s.id)
     else:
         form = forms.StudyForm()
-    return render(request, "studies/home.html", {"studies": m.Study.objects.all(), "form": form})
+    from core.presets import listar_presets
+    return render(request, "studies/home.html", {
+        "studies": m.Study.objects.all(), "form": form, "presets": listar_presets()})
 
 
 def study_detail(request, pk):

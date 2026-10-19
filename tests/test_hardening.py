@@ -119,6 +119,37 @@ class RegressaoGateTests(TestCase):
         self.assertIn("DIVERGE", out.getvalue())
 
 
+class ConfigNaTelaTests(TestCase):
+    def test_estudo_novo_mostra_presets_e_aceita_escolha(self):
+        d = Path(tempfile.mkdtemp())
+        from core import presets
+        s = m.Study.objects.create(name="Modelo")
+        presets.salvar_preset(s, d / "sensores.json")
+
+        original = presets.DIR_PADRAO
+        presets.DIR_PADRAO = d          # varredura aponta para o diretório do teste
+        try:
+            r = self.client.get("/")
+            self.assertEqual(r.status_code, 200)
+            self.assertIn("sensores.json", r.content.decode())
+
+            r = self.client.post("/", {"name": "Do preset", "preset": "sensores.json"})
+        finally:
+            presets.DIR_PADRAO = original
+        self.assertEqual(r.status_code, 302)
+        novo = m.Study.objects.get(name="Do preset")
+        self.assertEqual(novo.config["blocks"][0]["name"], s.config["blocks"][0]["name"])
+
+    def test_config_invalida_nao_salva(self):
+        s = m.Study.objects.create(name="X")
+        antes = s.config["blocks"][0]["name"]
+        ruim = '{"blocks": [], "periods": [], "stage1": {}, "stage2": {}, "strata": []}'
+        r = self.client.post(f"/s/{s.id}/config/", {"config": ruim})
+        self.assertEqual(r.status_code, 200)          # volta com erro no formulário
+        s.refresh_from_db()
+        self.assertEqual(s.config["blocks"][0]["name"], antes)
+
+
 class BackupDoTrabalhoTests(TestCase):
     """O trabalho manual (decisões, ligações, dicionários, tesauro) sobrevive
     a um exportar → importar em outro estudo."""

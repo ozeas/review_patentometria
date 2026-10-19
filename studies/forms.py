@@ -8,9 +8,18 @@ from . import models as m
 
 
 class StudyForm(forms.ModelForm):
+    preset = forms.ChoiceField(required=False, label="Configuração inicial",
+                               choices=[("", "padrão (cromatografia × petróleo)")])
+
     class Meta:
         model = m.Study
         fields = ["name", "description"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from core.presets import listar_presets
+        self.fields["preset"].choices = [("", "padrão (cromatografia × petróleo)")] + \
+            [(p.name, p.stem) for p in listar_presets()]
 
 
 class ConfigForm(forms.Form):
@@ -22,11 +31,11 @@ class ConfigForm(forms.Form):
             data = json.loads(self.cleaned_data["config"])
         except json.JSONDecodeError as e:
             raise forms.ValidationError(f"JSON inválido: {e}")
-        required = ["periods", "stage1", "stage2", "strata", "prevalence"]
-        missing = [k for k in required if k not in data]
-        if missing:
-            raise forms.ValidationError("Chaves obrigatórias ausentes: " + ", ".join(missing))
-        return data
+        from core.config import normalize_config, validate_config
+        erros = validate_config(data)
+        if erros:
+            raise forms.ValidationError(erros)
+        return normalize_config(data)
 
 
 class RoundForm(forms.ModelForm):
