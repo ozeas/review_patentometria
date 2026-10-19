@@ -135,6 +135,69 @@ igual ao artigo. Detalhe, ressalvas e o que falta em `VERIFICACAO.md`.
 > distribuição de famílias do próprio artigo (131 de uma base, 65 nas quatro,
 > 9 só-Espacenet) só fecha com **cinco**. A quinta é NL4001930↔CN120761525.
 
+## Usar em outro estudo (outro tema, outras bases)
+
+A ferramenta separa o **motor** do **preset do estudo**. O que muda de um projeto para outro está
+em dados, não em código: blocos de termos, bloco de classificação, períodos, janela recente, motivos
+das duas etapas de triagem, estratos, recortes e ordem de prevalência.
+
+```bash
+# 1. estudar o modelo: o preset do artigo é o exemplo completo
+cat presets/gc-petroleo-upstream.json | head -40
+
+# 2. criar o estudo novo a partir do esqueleto (ou da tela inicial, no seletor "Configuração inicial")
+python manage.py novo_estudo --nome "Sensoriamento em poços" --preset presets/vazio.json
+
+# 3. importar as exportações e rodar
+python manage.py importar_rodada --estudo "Sensoriamento em poços" --rodada "01/11/2026" \
+       --data 2026-11-01 --pasta ./dados/2026-11-01 --execucao "01/11/2026 15h"
+python manage.py executar_rodada 1 --exigir-consulta --exigir-aderencia
+
+# 4. declarar as consultas (nunca lidas do arquivo de resultado)
+python manage.py registrar_consulta <id_do_arquivo> --de registros/consulta_lens.txt
+
+# 5. triar, indicadores e planilha, como no estudo original
+```
+
+**Aviso de aderência.** Se a configuração não casar com o corpus (bloco sem casamento, famílias sem
+termo no título/resumo, registros sem IPC/CPC), `executar_rodada` avisa e `--exigir-aderencia` falha
+com código 1. É a proteção contra rodar um corpus novo com o tema do artigo e achar que o resultado
+"pequeno" é o achado.
+
+**Salvar um estudo como preset** (para reutilizar o desenho em outro corpus):
+
+```bash
+python manage.py exportar_preset 1 -o presets/meu-desenho.json
+```
+
+### Matriz de campos por base
+
+O que cada exportação traz (a tela de configuração mostra a mesma tabela e a validação recusa
+prevalência que prefira uma base sem o campo):
+
+| campo | Lens.org | Espacenet | Google Patents | Derwent (WoS) | INPI |
+|---|---|---|---|---|---|
+| título | ✓ | ✓ | ✓ | ✓ | ✓ |
+| resumo | ✓ | — | — | ✓ (DWPI) | — |
+| IPC/CPC | ✓ | ✓ | — | ✓ (IPC) | ✓ |
+| prioridade (número) | ✓ | — (só data) | — | ✓ | — |
+| família | ✓ (simples/DOCDB) | ✓ (DOCDB) | — | ✓ (DWPI) | — |
+| situação jurídica | ✓ | — | — | — | — |
+| citações | ✓ | — | — | — (CP/CR são do documento) | — |
+| consulta no arquivo | — | ✓ | ✓ | — | — |
+| contrato de formato | `docs/formatos/lens.md` | `espacenet.md` | `google.md` | `derwent.md` | `inpi.md` |
+
+> **INPI é contrato provisório.** Não havia exportação real do INPI quando o parser foi escrito: ele
+> reconhece o cabeçalho por sinônimos e **recusa** o que não casa, citando `docs/formatos/inpi.md`.
+> Antes de usar em produção, exporte 5–10 registros, ajuste os sinônimos e atualize o registro em
+> `core/sources.py`.
+
+### Cache
+
+`Round.cache` guarda PRISMA, BR, sugestões de ligação, diagnóstico e procedência. O cache é refeito
+quando muda qualquer insumo (config, arquivos, decisões, ligações, dicionários ou tesauro), por hash —
+não por evento. Indicadores são calculados sobre as famílias gravadas, sem rodar o pipeline.
+
 ## Regras implementadas (rastreáveis no Material e Métodos)
 
 | Etapa | Regra | Onde |
