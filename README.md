@@ -104,13 +104,22 @@ Para conferir de fato:
 2. Importe o trabalho manual da planilha anterior: decisões, ligações, depositantes e inventores. Use a tela **Importar**, `importar_trabalho` ou `importar_estudo`.
 3. Rode `conferir_regressao`.
 
-As contagens até 272 dependem só das exportações e das 4 ligações manuais. As contagens seguintes dependem das decisões importadas.
+As contagens até 272 dependem só das exportações e das uniões manuais. As contagens seguintes dependem das decisões importadas.
 
-> **As exportações de 15/10/2026 não estão neste repositório** (dados de base não
-> são versionados). O teste `tests/test_regressao.py` roda só quando a pasta é
-> apontada: `PATENTOMETRIA_DADOS=./dados/2026-10-15 python manage.py test
-> tests.test_regressao`. Sem ela o teste é *skipped*, nunca "aprovado". O que
-> está verificado sem esses dados está em `VERIFICACAO.md`.
+**Resultado de 19/10/2026, com os quatro arquivos reais:** 669 → 14 → 655 → **272**
+→ 383 (58,5%), com 131 famílias de uma base, 65 nas quatro e exclusivas 3/9/29/90 —
+igual ao artigo. Detalhe, ressalvas e o que falta em `VERIFICACAO.md`.
+
+> **As exportações não são versionadas.** O que é versionado é o registro das
+> uniões manuais (`registros/ligacoes_manuais_2026-10-15.csv`) e as consultas
+> recuperadas dos cabeçalhos (`registros/consultas_2026-10-15.md`). O teste roda
+> só com a pasta apontada:
+> `PATENTOMETRIA_DADOS=~/Documents/Shared/ppgen-doutorado/patentometria python manage.py test tests.test_regressao`.
+> Sem ela é *skipped*, nunca "aprovado".
+>
+> **Ressalva registrada:** o capítulo enuncia quatro uniões manuais, mas a
+> distribuição de famílias do próprio artigo (131 de uma base, 65 nas quatro,
+> 9 só-Espacenet) só fecha com **cinco**. A quinta é NL4001930↔CN120761525.
 
 ## Regras implementadas (rastreáveis no Material e Métodos)
 
@@ -145,6 +154,10 @@ core/            pipeline em Python puro (sem Django) — testável e reutilizá
   pipeline.py    orquestração, decisões, PRISMA
 studies/         aplicação Django (modelos, telas, exportação, comandos)
 tests/           testes do núcleo e da aplicação (python manage.py test tests)
+registros/       procedência versionada da rodada de 15/10/2026: uniões manuais e
+                 consultas recuperadas dos cabeçalhos das exportações
+scripts/         sondas de análise sobre as exportações (encadeamento, busca das
+                 uniões) — usam só o núcleo, sem Django
 ```
 
 Para acrescentar uma base, implemente `parse(text, recorte) -> list[Record]` em `core/parsers/` e registre-a em `PARSERS`.
