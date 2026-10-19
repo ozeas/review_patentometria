@@ -24,25 +24,33 @@ from . import models as m
 
 
 # ------------------------------------------------------------------ ingestão
-def guess_from_filename(name: str) -> tuple[str | None, str]:
-    """'espacenet_BR.csv' → ('espacenet', 'BR'); 'lens_nucleo.csv' → ('lens', 'nucleo')."""
+def guess_from_filename(name: str, recortes: dict[str, str] | None = None) -> tuple[str | None, str]:
+    """Deduz base e recorte pelo nome do arquivo.
+
+    'espacenet_BR.csv' → ('espacenet', 'BR'); 'lens_nucleo.csv' → ('lens', 'nucleo').
+    Os rótulos de recorte vêm da configuração do estudo (``config['recortes']``);
+    o que não casar cai no recorte principal.
+    """
+    from core.sources import base_pelo_nome
+
     low = Path(name).stem.lower()
-    src = None
-    for key, alias in (("lens", "lens"), ("espacenet", "espacenet"), ("google", "google"),
-                       ("derwent", "derwent"), ("darwent", "derwent"), ("clarivate", "derwent"),
-                       ("wos", "derwent")):
-        if key in low:
-            src = alias
-            break
-    rec = "BR" if re.search(r"(^|[_\-\s])br($|[_\-\s])", low) else "nucleo"
-    return src, rec
+    src = base_pelo_nome(name)
+    recortes = recortes or {"nucleo": "conjunto principal"}
+    principal = next(iter(recortes), "nucleo")
+    for rotulo in recortes:
+        if rotulo == principal:
+            continue
+        if re.search(rf"(^|[_\-.\s]){re.escape(rotulo.lower())}($|[_\-.\s])", low):
+            return src, rotulo
+    return src, principal
 
 
 @transaction.atomic
 def ingest(round_: m.Round, uploaded, source: str | None = None, recorte: str | None = None,
-           query_text: str = "", executed_at: str = "") -> m.SourceFile:
+           query_text: str = "", executed_at: str = "", recortes: dict[str, str] | None = None) -> m.SourceFile:
     data = uploaded.read()
-    g_src, g_rec = guess_from_filename(uploaded.name)
+    recortes = recortes or round_.study.cfg.get("recortes")
+    g_src, g_rec = guess_from_filename(uploaded.name, recortes)
     text = decode(data)
     src = source or detect_source(text) or g_src
     rec = recorte or g_rec

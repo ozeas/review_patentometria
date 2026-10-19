@@ -15,7 +15,7 @@ OBRIGATORIAS = ("blocks", "periods", "stage1", "stage2", "strata")
 
 DEFAULT_CONFIG = {
     "core_recorte": "nucleo",
-    "recortes": {"nucleo": "conjunto principal"},
+    "recortes": {"nucleo": "conjunto principal", "BR": "Brasil"},
     "utility_kinds": ["U"],
     "prio_link_min_digits": 8,
     "periods": [[1971, 1999], [2000, 2009], [2010, 2014], [2015, 2019], [2020, 2026]],

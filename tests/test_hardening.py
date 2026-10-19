@@ -150,6 +150,31 @@ class ConfigNaTelaTests(TestCase):
         self.assertEqual(s.config["blocks"][0]["name"], antes)
 
 
+class RecorteGenericoTests(TestCase):
+    def test_recorte_deduzido_de_qualquer_sufixo_configurado(self):
+        estudio = m.Study.objects.create(name="Recortes")
+        estudio.config = {**estudio.config, "recortes": {"nucleo": "principal", "AR": "Argentina"}}
+        estudio.save()
+        rnd = m.Round.objects.create(study=estudio, label="r", collection_date=date(2026, 10, 15))
+        sf = services.ingest(rnd, SimpleUploadedFile("lens_AR.csv", (FIX / "lens_sample.csv").read_bytes()),
+                             recortes=estudio.config["recortes"])
+        self.assertEqual(sf.recorte, "AR")
+
+    def test_recorte_desconhecido_cai_no_principal(self):
+        estudio = m.Study.objects.create(name="R2")
+        rnd = m.Round.objects.create(study=estudio, label="r")
+        sf = services.ingest(rnd, SimpleUploadedFile("lens_XX.csv", (FIX / "lens_sample.csv").read_bytes()),
+                             recortes=estudio.config["recortes"])
+        self.assertEqual(sf.recorte, "nucleo")
+
+    def test_estudo_real_continua_em_nucleo(self):
+        estudio = m.Study.objects.create(name="R3")
+        rnd = m.Round.objects.create(study=estudio, label="r")
+        sf = services.ingest(rnd, SimpleUploadedFile("lens_nucleo.csv", (FIX / "lens_sample.csv").read_bytes()),
+                             recortes=estudio.config["recortes"])
+        self.assertEqual(sf.recorte, "nucleo")
+
+
 class BackupDoTrabalhoTests(TestCase):
     """O trabalho manual (decisões, ligações, dicionários, tesauro) sobrevive
     a um exportar → importar em outro estudo."""
