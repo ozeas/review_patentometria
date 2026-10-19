@@ -3,6 +3,7 @@ import sys
 
 from django.core.management.base import BaseCommand
 
+from core.diagnostics import diagnosticar
 from studies import models as m
 from studies import services
 
@@ -15,6 +16,8 @@ class Command(BaseCommand):
         p.add_argument("--json", action="store_true")
         p.add_argument("--exigir-consulta", action="store_true",
                        help="falha (código 1) se alguma exportação estiver sem consulta registrada")
+        p.add_argument("--exigir-aderencia", action="store_true",
+                       help="falha (código 1) se a configuração não aderir ao corpus")
 
     def handle(self, *a, **o):
         rnd = m.Round.objects.get(pk=o["rodada"])
@@ -51,4 +54,19 @@ class Command(BaseCommand):
                 f"Consulta declarada ausente em {len(prov['sem_consulta'])} arquivo(s) e divergente "
                 f"do arquivo em {len(prov['consulta_divergente'])}. "
                 "Declare com `manage.py registrar_consulta` — o texto do cabeçalho é evidência, não registro."))
+            sys.exit(1)
+
+        diag = diagnosticar(result)
+        if diag["avisos"]:
+            self.stdout.write(self.style.WARNING("Aderência config × corpus:"))
+            for a in diag["avisos"]:
+                self.stdout.write(self.style.WARNING(f"  - {a}"))
+        if diag["informativos"] and not o["json"]:
+            self.stdout.write(self.style.WARNING(
+                f"{len(diag['informativos'])} campo(s) que alguma base não exporta "
+                "(veja a matriz na tela de configuração)"))
+        if o["exigir_aderencia"] and diag["avisos"]:
+            self.stderr.write(self.style.ERROR(
+                "A configuração não adere ao corpus. Corrija os blocos/classificação do estudo "
+                "antes de usar os números."))
             sys.exit(1)
