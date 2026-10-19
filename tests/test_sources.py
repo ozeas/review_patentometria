@@ -37,3 +37,9 @@ class RegistroTests(unittest.TestCase):
     def test_base_nova_sem_consulta_no_arquivo_nao_quebra(self):
         self.assertIsNone(spec("lens").consulta_no_arquivo)
         self.assertIsNotNone(spec("espacenet").consulta_no_arquivo)
+
+    def test_toda_base_tem_contrato_documentado(self):
+        from pathlib import Path as P
+        faltando = [k for k in REGISTRY
+                    if not (P(__file__).parent.parent / "docs" / "formatos" / f"{k}.md").exists()]
+        self.assertEqual(faltando, [])

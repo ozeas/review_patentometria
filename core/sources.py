@@ -56,6 +56,12 @@ REGISTRY: dict[str, SourceSpec] = {
                  "applicants", "inventors"),
         apelidos_arquivo=("derwent", "darwent", "clarivate", "wos"),
         observacao="resumo reescrito DWPI (AB/NOVELTY/USE); exportado pelo Web of Science"),
+    "inpi": SourceSpec(
+        "inpi", SOURCE_LABELS["inpi"], PARSERS["inpi"],
+        exporta=("title", "ipc", "applicants", "inventors"),
+        apelidos_arquivo=("inpi",),
+        observacao="CONTRATO PROVISÓRIO: formato não validado com exportação real "
+                   "(ver docs/formatos/inpi.md); sem resumo, citações ou situação jurídica"),
 }
 
 

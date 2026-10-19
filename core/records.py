@@ -9,12 +9,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 
-SOURCES = ("lens", "espacenet", "google", "derwent")
+SOURCES = ("lens", "espacenet", "google", "derwent", "inpi")
 SOURCE_LABELS = {
     "lens": "Lens.org",
     "espacenet": "Espacenet",
     "google": "Google Patents",
     "derwent": "Derwent (WoS)",
+    "inpi": "INPI (Brasil)",
 }
 
 

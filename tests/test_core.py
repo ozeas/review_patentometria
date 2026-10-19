@@ -95,7 +95,8 @@ class ConsolidationTests(TestCase):
         s = res.stats()
         self.assertEqual(s["identified"], 15)
         self.assertEqual(s["excluded_utility"], 2)
-        self.assertEqual(s["excluded_utility_by_source"], {"lens": 0, "espacenet": 1, "google": 0, "derwent": 1})
+        self.assertEqual(s["excluded_utility_by_source"],
+                         {"lens": 0, "espacenet": 1, "google": 0, "derwent": 1, "inpi": 0})
         self.assertEqual(s["eligible"], 13)
         self.assertEqual(s["families"], 5)
         self.assertEqual(s["redundant"], 8)

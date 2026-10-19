@@ -7,13 +7,14 @@ uma função ``parse(text, recorte) -> list[Record]`` e registre-a em
 """
 from __future__ import annotations
 
-from . import derwent, espacenet, google, lens
+from . import derwent, espacenet, google, inpi, lens
 
 PARSERS = {
     "lens": lens.parse,
     "espacenet": espacenet.parse,
     "google": google.parse,
     "derwent": derwent.parse,
+    "inpi": inpi.parse,
 }
 
 
@@ -41,6 +42,10 @@ def detect_source(text: str) -> str | None:
         return "lens"
     if first.replace(" ", "").startswith("PN\tTI"):
         return "derwent"
+    baixo = first.lower()
+    if ("pedido" in baixo or "processo" in baixo) and ("titulo" in baixo or "classificacao" in baixo
+                                                       or "classificação" in baixo):
+        return "inpi"
     return None
 
 
