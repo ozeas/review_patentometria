@@ -1,4 +1,5 @@
 {% extends "studies/base.html" %}
+{% load pt %}
 {% block content %}
 <h1>Configuração do estudo</h1>
 <p class="lead">Blocos lexicais, códigos do bloco de classificação, regra de prevalência, períodos, janela recente, categorias da triagem e estratos. A data da coleta da rodada substitui <code>collection_date</code>.</p>
@@ -7,6 +8,18 @@
   {{ form.config }}
   <p><button class="btn">Salvar</button> <a class="btn ghost" href="{% url 'study' study.id %}">Cancelar</a></p>
 </form>
+<div class="card small">
+  <b>O que cada base exporta</b>
+  <table style="margin-top:.5rem">
+    <tr><th>campo</th>{% for k in matriz %}<th>{{ labels|get:k }}</th>{% endfor %}</tr>
+    {% for c in campos %}
+    <tr><td><code>{{ c }}</code></td>
+      {% for k, linha in matriz.items %}<td class="num">{% if linha|get:c %}✓{% else %}—{% endif %}</td>{% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+  <p class="muted">A regra de <code>prevalence</code> não pode preferir uma base para um campo que ela não exporta — a configuração é recusada nesse caso. Derwent conta como fonte de <code>abstract</code> porque fornece o resumo reescrito DWPI.</p>
+</div>
 <div class="card small">
   <b>Chaves principais</b>
   <ul>

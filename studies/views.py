@@ -14,6 +14,7 @@ from core.lexical import compile_blocks, highlight
 from core.normalize import normalize_pub
 from core.queries import consultas_divergem
 from core.records import SOURCE_LABELS, SOURCES
+from core.sources import CAMPOS, matriz
 from core.vosviewer import cluster_indicators, parse_map, parse_network
 
 from . import export, forms, models as m, services, tabular
@@ -72,7 +73,9 @@ def study_config(request, pk):
             return redirect("study", study.id)
     else:
         form = forms.ConfigForm(initial={"config": json.dumps(study.cfg, ensure_ascii=False, indent=2)})
-    return render(request, "studies/config.html", {"study": study, "form": form})
+    return render(request, "studies/config.html", {"study": study, "form": form,
+                                                   "matriz": matriz(), "campos": CAMPOS,
+                                                   "labels": SOURCE_LABELS})
 
 
 # ------------------------------------------------------------------ rodadas
