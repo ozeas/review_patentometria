@@ -41,11 +41,14 @@ class Command(BaseCommand):
                 w(f"Recorte .................. {services._br_summary(result)}")
             w(f"Sugestões de ligação ..... {len(result.suggestions)}")
             if prov["sem_consulta"]:
-                w(self.style.WARNING(f"Sem consulta registrada .. {', '.join(prov['sem_consulta'])}"))
+                w(self.style.WARNING(f"Sem consulta declarada .. {', '.join(prov['sem_consulta'])}"))
+            if prov["consulta_divergente"]:
+                w(self.style.WARNING(f"DIVERGE do arquivo ...... {', '.join(prov['consulta_divergente'])}"))
             if prov["data_coleta"] is None:
                 w(self.style.WARNING("Rodada sem data de coleta — a janela recente e as prioridades ficam relativas."))
-        if o["exigir_consulta"] and prov["sem_consulta"]:
+        if o["exigir_consulta"] and (prov["sem_consulta"] or prov["consulta_divergente"]):
             self.stderr.write(self.style.ERROR(
-                f"Rodada sem consulta registrada em {len(prov['sem_consulta'])} arquivo(s). "
-                "Registre a consulta (arquivo *_query.txt ou tela do arquivo) antes de seguir."))
+                f"Consulta declarada ausente em {len(prov['sem_consulta'])} arquivo(s) e divergente "
+                f"do arquivo em {len(prov['consulta_divergente'])}. "
+                "Declare com `manage.py registrar_consulta` — o texto do cabeçalho é evidência, não registro."))
             sys.exit(1)

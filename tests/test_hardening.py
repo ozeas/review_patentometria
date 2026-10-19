@@ -98,6 +98,26 @@ class RegressaoGateTests(TestCase):
         self.assertEqual(ctx.exception.code, 1)
         self.assertIn("sem consulta registrada", out.getvalue())
 
+    def test_exigir_consulta_rejeita_apenas_evidencia(self):
+        # três arquivos com consulta declarada; o do Lens tem só evidência
+        self.rnd.files.exclude(source="lens").update(query_text="(ta = oil)")
+        self.rnd.files.filter(source="lens").update(query_text="",
+                                                    query_no_arquivo='(ta = "gas chromatography")')
+        out = io.StringIO()
+        with self.assertRaises(SystemExit) as ctx:
+            call_command("executar_rodada", self.rnd.id, exigir_consulta=True, stdout=out)
+        self.assertEqual(ctx.exception.code, 1)
+        self.assertIn("lens_sample.csv", out.getvalue() + out.getvalue())
+
+    def test_exigir_consulta_rejeita_divergencia(self):
+        self.rnd.files.update(query_text="(ta = x)")
+        self.rnd.files.filter(source="lens").update(query_no_arquivo="(ta = y)")
+        out = io.StringIO()
+        with self.assertRaises(SystemExit) as ctx:
+            call_command("executar_rodada", self.rnd.id, exigir_consulta=True, stdout=out)
+        self.assertEqual(ctx.exception.code, 1)
+        self.assertIn("DIVERGE", out.getvalue())
+
 
 class BackupDoTrabalhoTests(TestCase):
     """O trabalho manual (decisões, ligações, dicionários, tesauro) sobrevive
