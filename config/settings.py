@@ -6,7 +6,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("PATENTOMETRIA_SECRET_KEY", "dev-local-somente-altere-em-producao")
 DEBUG = os.environ.get("PATENTOMETRIA_DEBUG", "1") == "1"
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+
+# ALLOWED_HOSTS por ambiente: "host1,host2". Serve para abrir a aplicação na rede
+# local sem depender de DEBUG=True; o padrão fica no loopback.
+ALLOWED_HOSTS = [h.strip() for h in
+                 os.environ.get("PATENTOMETRIA_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+                 if h.strip()]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
