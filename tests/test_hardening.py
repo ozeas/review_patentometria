@@ -218,3 +218,16 @@ class ConsultaSeparadaTests(TestCase):
         self.assertEqual(sf.query_text, "")                        # declarada continua vazia
         self.assertIn("gas chromatography", sf.query_no_arquivo)    # evidência gravada
         self.assertIsNotNone(sf.query_no_arquivo_em)
+
+    def test_registrar_consulta_por_texto_e_por_arquivo(self):
+        sf = services.ingest(self.rnd, SimpleUploadedFile("lens_nucleo.csv",
+                                                          (FIX / "lens_sample.csv").read_bytes()))
+        call_command("registrar_consulta", sf.id, texto="G01N30 AND crude oil", stdout=io.StringIO())
+        sf.refresh_from_db()
+        self.assertEqual(sf.query_text, "G01N30 AND crude oil")
+
+        tmp = Path(tempfile.mkdtemp()) / "consulta.txt"
+        tmp.write_text("G01N30 AND (oil OR crude)\n", encoding="utf-8")
+        call_command("registrar_consulta", sf.id, de=str(tmp), stdout=io.StringIO())
+        sf.refresh_from_db()
+        self.assertEqual(sf.query_text, "G01N30 AND (oil OR crude)")
