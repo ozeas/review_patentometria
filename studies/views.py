@@ -12,6 +12,7 @@ from django.views.decorators.http import require_POST
 
 from core.lexical import compile_blocks, highlight
 from core.normalize import normalize_pub
+from core.queries import consultas_divergem
 from core.records import SOURCE_LABELS, SOURCES
 from core.vosviewer import cluster_indicators, parse_map, parse_network
 
@@ -127,7 +128,9 @@ def file_edit(request, pk):
             return redirect("round", sf.round_id)
     else:
         form = forms.QueryForm(initial={"query_text": sf.query_text, "executed_at": sf.executed_at})
-    return render(request, "studies/file_edit.html", {"sf": sf, "form": form, "round": sf.round, "study": sf.round.study})
+    return render(request, "studies/file_edit.html", {
+        "sf": sf, "form": form, "round": sf.round, "study": sf.round.study,
+        "divergente": consultas_divergem(sf.query_text, sf.query_no_arquivo)})
 
 
 @require_POST

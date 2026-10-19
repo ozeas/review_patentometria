@@ -50,8 +50,10 @@ class UploadForm(forms.Form):
 
 
 class QueryForm(forms.Form):
-    query_text = forms.CharField(widget=forms.Textarea(attrs={"rows": 4, "class": "mono"}), required=False,
-                                 label="Consulta registrada")
+    query_text = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 5, "class": "mono"}), required=False,
+        label="Consulta registrada (declarada)",
+        help_text="Cole aqui a consulta do histórico da base. Não é lida do arquivo de resultado.")
     executed_at = forms.CharField(required=False, label="Data/hora da busca")
 
 

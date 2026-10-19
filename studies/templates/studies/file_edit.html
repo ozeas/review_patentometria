@@ -2,9 +2,28 @@
 {% block content %}
 <h1>{{ sf.get_source_display }} · {{ sf.recorte }}</h1>
 <p class="lead">{{ sf.original_name }} — {{ sf.n_records }} registros.</p>
+
 <form method="post" class="card">{% csrf_token %}
-  <div class="field"><label>Consulta registrada</label>{{ form.query_text }}</div>
+  <div class="field"><label>Consulta registrada (declarada)</label>{{ form.query_text }}
+    <div class="muted small">{{ form.query_text.help_text }}</div></div>
   <div class="field"><label>Data/hora da busca</label>{{ form.executed_at }}</div>
   <button class="btn">Salvar</button>
 </form>
+
+<div class="card">
+  <h2>Consulta que o arquivo imprime</h2>
+  {% if sf.query_no_arquivo %}
+    <p class="small muted">Lida do cabeçalho da exportação em
+      {{ sf.query_no_arquivo_em|date:"d/m/Y H:i"|default:"data não registrada" }}.
+      É evidência do que foi executado: não substitui a consulta declarada.</p>
+    {% if sf.query_text %}
+      {% if divergente %}<p><span class="tag warn">diverge da declarada</span></p>
+      {% else %}<p><span class="tag ok">igual à declarada</span></p>{% endif %}
+    {% endif %}
+    <pre class="mono small">{{ sf.query_no_arquivo }}</pre>
+  {% else %}
+    <p class="muted">Nada lido. Rode <code>manage.py extrair_consulta {{ sf.round_id }}</code>
+      para registrar o que a exportação imprime.</p>
+  {% endif %}
+</div>
 {% endblock %}
