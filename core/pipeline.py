@@ -8,46 +8,10 @@ from datetime import date
 from . import indicators as ind
 from .consolidate import ConsolidationResult, ManualLink, consolidate, map_subset_to_families, suggest_links
 from .lexical import compile_blocks, lexical_profile
-from .prevalence import DEFAULT_PREVALENCE, Dictionaries, consolidate_fields
+from .prevalence import Dictionaries, consolidate_fields
 from .records import Record
 
-DEFAULT_CONFIG = {
-    "core_recorte": "nucleo",
-    "utility_kinds": ["U"],
-    "prio_link_min_digits": 8,
-    "periods": [[1971, 1999], [2000, 2009], [2010, 2014], [2015, 2019], [2020, 2026]],
-    "window_months": 36,
-    "collection_date": "2026-10-15",
-    "prevalence": DEFAULT_PREVALENCE,
-    "blocks": [
-        {"name": "(i) cromatografia gasosa",
-         "terms": ["gas chromatography", "gas chromatograph", "GCxGC", "GC-MS", "GC-FID"]},
-        {"name": "(ii) petróleo e poço",
-         "terms": ["crude oil", "reservoir fluid", "borehole", "wellbore", "downhole",
-                   "drilling fluid", "geochemical"]},
-    ],
-    "classification_block": ["G01N", "C10G", "E21B 49"],
-    "stage1": {
-        "label": "Relação entre cromatografia gasosa e petróleo",
-        "exclusion_reasons": ["Falso positivo lexical", "Óleo não petrolífero",
-                              "Petróleo não é objeto da análise"],
-    },
-    "stage2": {
-        "label": "Segmento upstream",
-        "inclusion_segments": ["Exploração", "Perfuração e avaliação de formação",
-                               "Reservatório e produção"],
-        "exclusion_reasons": ["Downstream", "Transversal", "Midstream", "Ambiental/forense"],
-    },
-    "strata": [
-        {"code": "C1", "name": "núcleo",
-         "definition": "A cromatografia gasosa é nomeada no título e constitui o objeto da invenção."},
-        {"code": "C2", "name": "aplicado",
-         "definition": "A cromatografia gasosa é o instrumento de um método voltado a outra finalidade."},
-        {"code": "C3", "name": "periférico",
-         "definition": "Relação indireta com a cromatografia gasosa ou pertinência a confirmar."},
-    ],
-    "top_n": 15,
-}
+from .config import DEFAULT_CONFIG, normalize_config  # reexportado: ponto único do padrão
 
 
 @dataclass
@@ -143,7 +107,7 @@ def run(
     manual_links: list[ManualLink] | None = None,
     decisions: list[Decision] | None = None,
 ) -> PipelineResult:
-    cfg = {**DEFAULT_CONFIG, **(config or {})}
+    cfg = normalize_config(config)
     core = [r for r in records if r.recorte == cfg["core_recorte"]]
     other = [r for r in records if r.recorte != cfg["core_recorte"]]
     res = consolidate(core, utility_kinds=tuple(cfg["utility_kinds"]),
