@@ -15,6 +15,7 @@ from core.parsers import detect_source, parse_bytes, decode
 from core.pipeline import Decision as CoreDecision
 from core.pipeline import PipelineResult, run
 from core.prevalence import Dictionaries
+from core.queries import consultas_divergem
 from core.records import Record as CoreRecord
 
 from . import models as m
@@ -88,17 +89,27 @@ def round_config(round_: m.Round) -> dict:
 
 # ------------------------------------------------------------------ procedência
 def provenance(round_: m.Round) -> dict:
-    """Registro de procedência da rodada: consulta, data/hora e hash de cada
-    exportação, mais o que está faltando para a rodada ser rastreável."""
+    """Registro de procedência: consulta **declarada**, data/hora e hash de cada
+    exportação, mais a consulta que o arquivo imprime (evidência, campo à parte).
+
+    Só a declarada conta como registro: o texto lido do cabeçalho da exportação
+    é evidência do que foi executado e nunca substitui a declaração.
+    """
     files = list(round_.files.all().order_by("recorte", "source"))
-    rows = [{"arquivo": f.original_name, "base": f.source, "recorte": f.recorte,
-             "registros": f.n_records, "sha256": f.sha256, "executado_em": f.executed_at,
-             "consulta_registrada": bool(f.query_text.strip()),
-             "consulta": f.query_text.strip()} for f in files]
+    rows = []
+    for f in files:
+        declarada = (f.query_text or "").strip()
+        no_arquivo = (f.query_no_arquivo or "").strip()
+        rows.append({"arquivo": f.original_name, "base": f.source, "recorte": f.recorte,
+                     "registros": f.n_records, "sha256": f.sha256, "executado_em": f.executed_at,
+                     "consulta_declarada": declarada, "consulta_no_arquivo": no_arquivo,
+                     "consulta_divergente": consultas_divergem(declarada, no_arquivo),
+                     "consulta_registrada": bool(declarada)})
     return {
         "arquivos": rows,
         "n_arquivos": len(rows),
         "sem_consulta": [r["arquivo"] for r in rows if not r["consulta_registrada"]],
+        "consulta_divergente": [r["arquivo"] for r in rows if r["consulta_divergente"]],
         "sem_hash": [r["arquivo"] for r in rows if not r["sha256"]],
         "sem_data_execucao": [r["arquivo"] for r in rows if not r["executado_em"]],
         "data_coleta": round_.collection_date.isoformat() if round_.collection_date else None,

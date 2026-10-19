@@ -231,3 +231,20 @@ class ConsultaSeparadaTests(TestCase):
         call_command("registrar_consulta", sf.id, de=str(tmp), stdout=io.StringIO())
         sf.refresh_from_db()
         self.assertEqual(sf.query_text, "G01N30 AND (oil OR crude)")
+
+    def test_provenance_distingue_declarada_de_evidencia(self):
+        sf = services.ingest(self.rnd, SimpleUploadedFile("espacenet_nucleo.csv",
+                                                          (FIX / "espacenet_sample.csv").read_bytes()))
+        sf.query_no_arquivo = '(ta = "gas chromatography")'
+        sf.save()
+        prov = services.provenance(self.rnd)
+        self.assertEqual(prov["sem_consulta"], ["espacenet_nucleo.csv"])   # só a declarada conta
+        self.assertEqual(prov["arquivos"][0]["consulta_no_arquivo"], '(ta = "gas chromatography")')
+        self.assertFalse(prov["arquivos"][0]["consulta_divergente"])
+
+        sf.query_text = '(ta = "gas chromatograph")'
+        sf.save()
+        prov = services.provenance(self.rnd)
+        self.assertNotIn("espacenet_nucleo.csv", prov["sem_consulta"])
+        self.assertTrue(prov["arquivos"][0]["consulta_divergente"])
+        self.assertEqual(prov["consulta_divergente"], ["espacenet_nucleo.csv"])
