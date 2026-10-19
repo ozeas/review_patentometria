@@ -1,6 +1,7 @@
 """Ponte entre o núcleo do pipeline (``core``) e o banco de dados."""
 from __future__ import annotations
 
+import json
 import re
 from datetime import date
 from hashlib import sha256 as _sha256
@@ -10,6 +11,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from core import consolidate as ccons
+from core.diagnostics import diagnosticar
 from core.normalize import has_cjk, name_key, pinyin_name
 from core.parsers import detect_source, parse_bytes, decode
 from core.pipeline import Decision as CoreDecision
@@ -149,8 +151,117 @@ def run_round(round_: m.Round) -> PipelineResult:
     round_.run_summary = {"prisma": result.prisma(), "br": _br_summary(result),
                           "n_suggestions": len(result.suggestions),
                           "procedencia": provenance(round_)}
-    round_.save(update_fields=["last_run", "run_summary"])
+    round_.cache = {"inputs_version": inputs_version(round_), "prisma": result.prisma(),
+                    "br": result.br, "n_suggestions": len(result.suggestions),
+                    "procedencia": round_.run_summary["procedencia"],
+                    "diagnostico": diagnosticar(result),
+                    "ligacoes": {"aplicadas": sorted({i for f in result.families
+                                                      for i in f["family"].manual_link_ids}),
+                                 "sem_correspondencia": sorted(ml.id for ml in result.consolidation.unmatched_links),
+                                 "sugestoes": result.suggestions}}
+    round_.save(update_fields=["last_run", "run_summary", "cache"])
     return result
+
+
+# ------------------------------------------------------------------ cache
+def inputs_version(round_: m.Round) -> str:
+    """Hash de tudo que entra no pipeline.
+
+    Config, arquivos, decisões, ligações, dicionários e tesauro: se qualquer
+    insumo mudar, o hash muda e o cache é refeito. Invalidar por hash (e não por
+    evento) evita número velho quando alguém esquece de limpar o cache.
+    """
+    h = _sha256()
+    h.update(json.dumps(round_config(round_), sort_keys=True, default=str).encode())
+    for f in round_.files.order_by("id"):
+        h.update(f"{f.id}:{f.sha256}:{f.n_records}:{f.recorte}".encode())
+    study = round_.study
+    for d in study.decisions.order_by("id"):
+        h.update(f"d{d.id}:{d.updated.isoformat()}:{d.stage1}:{d.stage2}:{d.stratum}:"
+                 f"{','.join(d.numbers or [])}".encode())
+    for l in study.manual_links.order_by("id"):
+        h.update(f"l{l.id}:{l.number_a}:{l.number_b}".encode())
+    for a in study.applicant_aliases.order_by("id"):
+        h.update(f"a{a.id}:{a.raw_key}:{a.harmonized}:{a.group}".encode())
+    for i in study.inventor_aliases.order_by("id"):
+        h.update(f"i{i.id}:{i.raw_key}:{i.standard}".encode())
+    for t in study.thesaurus.order_by("id"):
+        h.update(f"t{t.id}:{t.label}:{t.replace_by}".encode())
+    return h.hexdigest()
+
+
+class Resumo:
+    """Fachada leve sobre o resultado guardado: prisma e BR sem recalcular o pipeline."""
+
+    def __init__(self, round_: m.Round):
+        self.round = round_
+        self.dados = round_.cache or {}
+
+    def prisma(self) -> dict:
+        return self.dados.get("prisma", {})
+
+    @property
+    def br(self):
+        return self.dados.get("br")
+
+    @property
+    def n_suggestions(self) -> int:
+        return self.dados.get("n_suggestions", 0)
+
+    @property
+    def procedencia(self) -> dict:
+        return self.dados.get("procedencia") or {}
+
+    @property
+    def diagnostico(self) -> dict:
+        return self.dados.get("diagnostico") or {}
+
+    @property
+    def ligacoes(self) -> dict:
+        return self.dados.get("ligacoes") or {"aplicadas": [], "sem_correspondencia": [], "sugestoes": []}
+
+    def indicators(self, subset: str = "final", stratum: str | None = None) -> dict:
+        return indicators(self.round, subset, stratum)
+
+
+def resumo(round_: m.Round) -> Resumo:
+    """Resumo da rodada, refeito só quando algum insumo mudou (``inputs_version``)."""
+    if (round_.cache or {}).get("inputs_version") != inputs_version(round_):
+        run_round(round_)
+        round_.refresh_from_db(fields=["cache", "run_summary", "last_run"])
+    return Resumo(round_)
+
+
+# ------------------------------------------------------------------ indicadores sem pipeline
+def _familias_db(round_: m.Round, subset: str = "unificada", stratum: str | None = None) -> list[dict]:
+    """Famílias gravadas pela última execução, filtradas por conjunto e estrato."""
+    fams = list(round_.families.all())
+    dec = decisions_map(round_.study, fams)
+    out = []
+    for f in fams:
+        d = dec.get(f.key)
+        st1 = d.stage1 if d else ""
+        st2 = d.stage2 if d else ""
+        if subset == "etapa1" and st1 != "incluir":
+            continue
+        if subset == "final" and not (st1 == "incluir" and st2 == "incluir"):
+            continue
+        if stratum and not (d and d.stratum == stratum):
+            continue
+        out.append({"key": f.key, "fields": {**f.fields, "_origin": f.origin}})
+    return out
+
+
+def indicators(round_: m.Round, subset: str = "final", stratum: str | None = None) -> dict:
+    """Indicadores calculados sobre as famílias gravadas (não roda o pipeline)."""
+    from core import indicators as ind
+
+    cfg = round_config(round_)
+    return ind.compute_all(_familias_db(round_, subset, stratum), cfg["periods"], cfg.get("top_n", 15))
+
+
+def contagem_final(round_: m.Round) -> int:
+    return len(_familias_db(round_, "final"))
 
 
 def _br_summary(result: PipelineResult):

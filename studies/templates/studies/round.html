@@ -45,6 +45,13 @@
       <span class="small muted">Última: {{ round.last_run|date:"d/m/Y H:i"|default:"nunca" }}</span>
     </form>
     <p class="small muted">Normaliza números, exclui modelos de utilidade, encadeia registros em famílias, aplica as ligações manuais, a regra de prevalência e os dicionários. As decisões de triagem são lidas a cada página e não exigem reexecução.</p>
+    {% if diag.avisos %}
+    <div class="card" style="border-left:3px solid #b58900">
+      <h3>Aderência da configuração ao corpus</h3>
+      {% for a in diag.avisos %}<p class="small">⚠ {{ a }}</p>{% endfor %}
+      <p class="small muted">Revise os blocos de termos e o bloco de classificação na configuração do estudo antes de usar estes números.</p>
+    </div>
+    {% endif %}
     {% if prisma %}
     <div class="flow" style="margin-top:1rem">
       <div class="lab">Identificação</div>

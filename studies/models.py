@@ -46,6 +46,7 @@ class Round(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     last_run = models.DateTimeField(null=True, blank=True)
     run_summary = models.JSONField(default=dict, blank=True)
+    cache = models.JSONField("resultado em cache", default=dict, blank=True)
 
     class Meta:
         verbose_name = "rodada de coleta"

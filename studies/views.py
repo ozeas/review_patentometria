@@ -78,13 +78,13 @@ def study_config(request, pk):
 # ------------------------------------------------------------------ rodadas
 def round_detail(request, pk):
     rnd = get_object_or_404(m.Round, pk=pk)
-    result = services.compute(rnd) if rnd.files.exists() else None
+    result = services.resumo(rnd) if rnd.files.exists() else None
     prisma = result.prisma() if result else None
     return render(request, "studies/round.html", {
         "round": rnd, "study": rnd.study, "upload": forms.UploadForm(), "prisma": prisma,
         "result": result, "labels": SOURCE_LABELS, "sources": SOURCES,
         "has_families": rnd.families.exists(),
-        "files": rnd.files.all(),
+        "files": rnd.files.all(), "diag": (result.diagnostico if result else None),
     })
 
 
@@ -288,12 +288,11 @@ def links(request, pk):
         elif request.POST.get("action") == "delete":
             m.ManualLink.objects.filter(study=study, id=request.POST.get("id")).delete()
         return redirect("links", pk)
-    result = services.compute(rnd)
-    applied = {i for f in result.families for i in f["family"].manual_link_ids}
-    unmatched = {ml.id for ml in result.consolidation.unmatched_links}
+    resumo = services.resumo(rnd)
     return render(request, "studies/links.html", {
-        "round": rnd, "study": study, "suggestions": result.suggestions,
-        "links": study.manual_links.all(), "applied": applied, "unmatched": unmatched,
+        "round": rnd, "study": study, "suggestions": resumo.ligacoes["sugestoes"],
+        "links": study.manual_links.all(), "applied": set(resumo.ligacoes["aplicadas"]),
+        "unmatched": set(resumo.ligacoes["sem_correspondencia"]),
     })
 
 
@@ -353,22 +352,23 @@ def dict_inventors(request, pk):
 # ------------------------------------------------------------------ indicadores
 def indicators(request, pk):
     rnd = get_object_or_404(m.Round, pk=pk)
-    result = services.compute(rnd)
+    cfg = services.round_config(rnd)
     subset = request.GET.get("conjunto", "final")
     stratum = request.GET.get("estrato") or None
-    data = result.indicators(subset, stratum)
+    data = services.indicators(rnd, subset, stratum)
     by_stratum = []
     if subset == "final":
-        for s in result.config["strata"]:
-            d = result.indicators("final", s["code"])
+        for s in cfg["strata"]:
+            d = services.indicators(rnd, "final", s["code"])
             by_stratum.append({"s": s, "n": d["n"], "periodos": d["periodos"]["linhas"],
                                "jur": d["jurisdicao_origem"]["linhas"][:5], "grupos": d["grupos"]["linhas"][:5],
                                "ipc": d["ipc_grupos"]["linhas"][:5]})
-    lex = Counter(f["fields"].get("lexical_level") for f in result.stage(subset))
+    lex = Counter(f["fields"].get("lexical_level") for f in services._familias_db(rnd, subset))
+    resumo = services.resumo(rnd)
     return render(request, "studies/indicators.html", {
         "round": rnd, "study": rnd.study, "d": data, "subset": subset, "estrato": stratum or "",
-        "strata": result.config["strata"], "by_stratum": by_stratum, "prisma": result.prisma(),
-        "lex": dict(lex), "br": result.br,
+        "strata": cfg["strata"], "by_stratum": by_stratum, "prisma": resumo.prisma(),
+        "lex": dict(lex), "br": resumo.br,
     })
 
 
@@ -395,7 +395,7 @@ def vos(request, pk):
             messages.success(request, f"Mapa importado: {res['termos']} termos, {res['ligacoes']} ligações, "
                                       f"{len(res['clusters'])} clusters.")
             return redirect("vos", pk)
-    final_n = len(services.compute(rnd).stage("final")) if rnd.files.exists() else 0
+    final_n = services.contagem_final(rnd) if rnd.files.exists() else 0
     runs = rnd.vos_runs.all()
     return render(request, "studies/vos.html", {"round": rnd, "study": study, "form": forms.VosUploadForm(),
                                                 "runs": runs, "final_n": final_n,
