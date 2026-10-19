@@ -22,12 +22,12 @@
       <div class="field"><label>Descrição</label><textarea name="description" rows="3"></textarea></div>
       <div class="field"><label>Configuração inicial</label>
         <select name="preset" style="width:100%">
-          <option value="">padrão (cromatografia × petróleo)</option>
+          <option value="">padrão (patentometria genérico)</option>
           {% for p in presets %}<option value="{{ p.name }}">{{ p.stem }}</option>{% endfor %}
         </select>
       </div>
       <button class="btn">Criar estudo</button>
-      <p class="small muted">Sem preset, a configuração inicial reproduz a do artigo (GC × petróleo, upstream).
+      <p class="small muted">Sem preset, o estudo nasce com o padrão genérico de patentometria (blocos, classificação, triagem e estratos a preencher).
         Com preset, o estudo nasce com o tema do modelo — e pode ser editado depois.</p>
     </form>
   </div>

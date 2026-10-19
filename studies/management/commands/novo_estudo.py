@@ -3,8 +3,9 @@
     python manage.py novo_estudo --nome "Sensoriamento em poços" \\
         --preset presets/sensoriamento-exemplo.json
 
-Sem ``--preset`` o estudo nasce com a configuração padrão (cromatografia ×
-petróleo) — use isto só quando for exatamente esse o tema.
+Sem ``--preset`` o estudo nasce com o padrão genérico de patentometria
+(blocos, classificação, triagem e estratos a preencher). Use um preset
+(``presets/gc-petroleo-upstream.json``) para reproduzir o desenho do artigo.
 """
 from django.core.management.base import BaseCommand, CommandError
 
@@ -18,7 +19,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, p):
         p.add_argument("--nome", required=True)
-        p.add_argument("--preset", help="arquivo JSON de preset; vazio = configuração padrão")
+        p.add_argument("--preset", help="arquivo JSON de preset; vazio = padrão genérico de patentometria")
         p.add_argument("--descricao", default="")
 
     def handle(self, *a, **o):

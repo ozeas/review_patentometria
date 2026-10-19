@@ -9,7 +9,7 @@ from . import models as m
 
 class StudyForm(forms.ModelForm):
     preset = forms.ChoiceField(required=False, label="Configuração inicial",
-                               choices=[("", "padrão (cromatografia × petróleo)")])
+                               choices=[("", "padrão (patentometria genérico)")])
 
     class Meta:
         model = m.Study
@@ -18,7 +18,7 @@ class StudyForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         from core.presets import listar_presets
-        self.fields["preset"].choices = [("", "padrão (cromatografia × petróleo)")] + \
+        self.fields["preset"].choices = [("", "padrão (patentometria genérico)")] + \
             [(p.name, p.stem) for p in listar_presets()]
 
 

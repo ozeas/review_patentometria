@@ -32,7 +32,7 @@ def home(request):
                 s.config = carregar_preset(DIR_PADRAO / escolha)
                 messages.success(request, f"Estudo criado a partir do preset {escolha}.")
             else:
-                messages.success(request, "Estudo criado com a configuração padrão.")
+                messages.success(request, "Estudo criado com o padrão genérico de patentometria.")
             s.save()
             return redirect("study", s.id)
     else:

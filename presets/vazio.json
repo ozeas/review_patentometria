@@ -10,7 +10,7 @@
     {"name": "(i) termo do tema", "terms": ["substitua por um termo do tema"]},
     {"name": "(ii) contexto de aplicação", "terms": ["substitua por um termo de contexto"]}
   ],
-  "classification_block": ["G01N"],
+  "classification_block": [],
   "stage1": {
     "label": "Relação entre o tema e o contexto",
     "exclusion_reasons": ["Falso positivo lexical", "Outro domínio de aplicação"]

@@ -7,6 +7,7 @@ from core.config import DEFAULT_CONFIG
 from core.diagnostics import diagnosticar
 from core.parsers import parse_bytes
 from core.pipeline import run
+from core.presets import carregar_preset
 
 DADOS = Path.home() / "Documents/Shared/ppgen-doutorado/patentometria"
 
@@ -36,7 +37,8 @@ class DiagnosticsTests(unittest.TestCase):
         self.assertTrue(any("sensoriamento" in a for a in d["avisos"]))
 
     def test_config_do_estudo_nao_gera_aviso_de_lexico(self):
-        d = diagnosticar(run(self.recs, config=copy.deepcopy(DEFAULT_CONFIG)))
+        artigo = carregar_preset(Path(__file__).parent.parent / "presets" / "gc-petroleo-upstream.json")
+        d = diagnosticar(run(self.recs, config=artigo))
         self.assertLess(d["lexical_ausente_pct"], 50.0)
         self.assertFalse(any("lexical" in a.lower() for a in d["avisos"]))
 

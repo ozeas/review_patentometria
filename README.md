@@ -42,7 +42,7 @@ Opcional: `python manage.py createsuperuser` dá acesso a `/admin/`, onde todos 
 
 ## Uso pela interface
 
-1. **Estudo.** Crie um estudo. A configuração padrão reproduz a do artigo: blocos lexicais, bloco de classificação G01N/C10G/E21B 49, regra de prevalência, períodos, janela de 36 meses, categorias da triagem e estratos. Ela é editável em JSON.
+1. **Estudo.** Crie um estudo. Sem preset, o estudo nasce com o **padrão genérico de patentometria** (blocos, classificação, períodos, triagem e estratos a preencher; a regra de prevalência já vem pronta). Com preset (ex.: `gc-petroleo-upstream`), o estudo nasce com o desenho daquele modelo. A configuração é editável em JSON.
 2. **Rodada.** Crie uma rodada com a data da coleta e envie os arquivos.
    - Base e recorte são detectados pelo conteúdo e pelo nome (`lens_nucleo.csv`, `espacenet_BR.csv`, `darwent_nucleo.txt`).
    - Os `*_query.txt` enviados juntos ficam registrados como a consulta do arquivo correspondente.

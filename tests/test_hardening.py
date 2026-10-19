@@ -211,7 +211,7 @@ class BackupDoTrabalhoTests(TestCase):
         self.assertEqual(len(payload["tesauro"]), 1)
         self.assertEqual(len(payload["rodadas"]), 1)
         self.assertEqual(payload["rodadas"][0]["procedencia"]["sem_consulta"], [])
-        self.assertEqual(payload["estudo"]["config"]["blocks"][0]["name"], "(i) cromatografia gasosa")
+        self.assertEqual(payload["estudo"]["config"]["blocks"][0]["name"], "(i) termo do tema")
 
     def test_restaura_em_outro_estudo(self):
         self._exportar()
