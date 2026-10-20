@@ -20,3 +20,4 @@ object { border:1px solid var(--rule); border-radius:6px; background:#fff; }
 footer { border-top:1px solid var(--rule); margin-top:2rem; padding:1.2rem; text-align:center;
          color:#4A5566; font-size:.9rem; }
 @media (max-width:640px) { .toc { columns:1; } header h1 { font-size:1.6rem; } }
+.muted { color:#4A5566; font-size:.95rem; }

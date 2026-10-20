@@ -62,6 +62,7 @@ def gerar(destino: Path) -> None:
 <main>
   <section><h2>Sumário</h2><ol class="toc">{itens}</ol></section>
   <section><h2>Ler aqui</h2>
+    <p class="muted">Se o leitor não aparecer, <a href="guia.pdf">abra o PDF</a> ou baixe pelo botão acima.</p>
     <object data="guia.pdf" type="application/pdf" width="100%" height="900">
       <p>Seu navegador não exibe PDF embutido. <a href="guia.pdf">Abra o guia</a>.</p>
     </object>
