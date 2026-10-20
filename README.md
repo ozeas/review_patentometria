@@ -21,7 +21,25 @@ Exportações (CSV/TXT) ──► Adaptadores por base ──► Normalização 
             └─► Planilha base .xlsx (PRISMA e estratos em fórmulas)
 ```
 
-## Instalação e execução
+## Instalação
+
+**Usuários (Windows, macOS, Linux).** Baixe o zip do seu sistema na página de releases, extraia e
+execute o instalador (`install.ps1`, `install.command` ou `install.sh`). Não pede administrador e cria
+atalhos no Desktop e no menu do sistema. Passo a passo e solução de problemas em
+[`docs/INSTALACAO.md`](docs/INSTALACAO.md).
+
+Se o pacote estiver publicado no PyPI:
+
+```bash
+uv tool install patentometria
+patentometria            # abre em http://127.0.0.1:8080
+```
+
+Os dados (banco, uploads, logs) ficam na pasta do usuário — `patentometria where` mostra o caminho.
+O padrão é **somente local** (`127.0.0.1`); para abrir na rede, use `patentometria serve --host 0.0.0.0`
+e libere a porta no firewall.
+
+### Desenvolvimento
 
 Requer Python 3.11 ou superior. As versões das dependências estão fixadas
 (`requirements.txt` e `uv.lock`) — é o que permite dizer que duas execuções
@@ -143,10 +161,10 @@ das duas etapas de triagem, estratos, recortes e ordem de prevalência.
 
 ```bash
 # 1. estudar o modelo: o preset do artigo é o exemplo completo
-cat presets/gc-petroleo-upstream.json | head -40
+cat studies/presets/gc-petroleo-upstream.json | head -40
 
 # 2. criar o estudo novo a partir do esqueleto (ou da tela inicial, no seletor "Configuração inicial")
-python manage.py novo_estudo --nome "Sensoriamento em poços" --preset presets/vazio.json
+python manage.py novo_estudo --nome "Sensoriamento em poços" --preset studies/presets/vazio.json
 
 # 3. importar as exportações e rodar
 python manage.py importar_rodada --estudo "Sensoriamento em poços" --rodada "01/11/2026" \
@@ -167,7 +185,7 @@ com código 1. É a proteção contra rodar um corpus novo com o tema do artigo 
 **Salvar um estudo como preset** (para reutilizar o desenho em outro corpus):
 
 ```bash
-python manage.py exportar_preset 1 -o presets/meu-desenho.json
+python manage.py exportar_preset 1 -o studies/presets/meu-desenho.json
 ```
 
 ### Matriz de campos por base

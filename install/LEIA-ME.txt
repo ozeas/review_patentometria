@@ -1,0 +1,38 @@
+PATENTOMETRIA 0.3.0 — INSTALACAO
+
+Escolha o arquivo do seu sistema, na mesma pasta deste LEIA-ME:
+
+  Windows ....... clique com o botao direito em install.ps1
+                  > "Executar com PowerShell"
+                  (se o Windows bloquear: powershell -ExecutionPolicy Bypass -File .\install.ps1)
+
+  macOS ......... duplo clique em install.command
+                  (se o macOS bloquear: clique com o botao direito > Abrir)
+
+  Linux ......... chmod +x install.sh && ./install.sh
+
+O instalador baixa o uv (que traz o Python necessario), instala o aplicativo
+e cria atalhos no Desktop e no menu do sistema. Nao pede senha de administrador.
+
+DEPOIS DE INSTALAR
+  Abra "Patentometria" pelo atalho. O navegador abre em http://127.0.0.1:8080
+  Para saber a pasta de dados:  patentometria where
+  Para conferir a instalacao:   patentometria check
+
+ONDE FICAM OS DADOS
+  Windows: %LOCALAPPDATA%\UFES\Patentometria
+  macOS:   ~/Library/Application Support/Patentometria
+  Linux:   ~/.local/share/Patentometria
+
+  Faca backup pelo proprio aplicativo (exportar_estudo) ou copie a pasta
+  inteira. O banco atual desta maquina NAO e migrado automaticamente.
+
+DESINSTALAR
+  uv tool uninstall patentometria
+  (a pasta de dados NAO e apagada)
+
+PROBLEMAS COMUNS
+  - "patentometria nao e reconhecido": abra um terminal novo (o PATH mudou).
+  - Porta ocupada: o aplicativo usa a proxima porta livre (8080, 8081...).
+  - macOS bloqueou o arquivo: clique direito > Abrir, ou
+    xattr -dr com.apple.quarantine install.command
