@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "patentometria"
-version = "0.3.0"
+version = "0.3.1"
 description = "Pipeline de análise patentométrica do artigo PGEN1075/UFES (GC x petróleo, upstream)"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -21,7 +21,8 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering",
 ]
-# license = "MIT"   # decisão pendente: defina antes do primeiro `uv publish` (docs/PYPI.md)
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = [
     "Django==5.2.18",
     "openpyxl==3.1.5",

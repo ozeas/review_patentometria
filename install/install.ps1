@@ -1,6 +1,6 @@
 # Instalador da Patentometria para Windows (sem administrador).
 $ErrorActionPreference = "Stop"
-$Ver = "0.3.0"
+$Ver = "0.3.1"
 $Aqui = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Wheel = Join-Path $Aqui "patentometria-$Ver-py3-none-any.whl"
 

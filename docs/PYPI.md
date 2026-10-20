@@ -1,30 +1,16 @@
 # Publicação no PyPI
 
-O pacote está configurado (`pyproject.toml` + `.github/workflows/publish.yml`), mas **ainda não foi
-publicado**. Há duas pendências antes do primeiro envio: a licença e a credencial.
+Pacote configurado (`pyproject.toml`, `LICENSE` MIT e `.github/workflows/publish.yml`), versão
+**0.3.1**. Falta apenas o cadastro do *pending publisher* na conta do PyPI — depois disso a publicação
+é automática a cada tag `v*`.
 
-## 1. Definir a licença (bloqueia o porteiro)
+## 1. Licença (definida)
 
-O `scripts/check_pypi.py` reprova qualquer publicação sem licença. Escolha uma e registre:
-
-```toml
-# pyproject.toml, dentro de [project]
-license = "MIT"
-```
-
-E crie o arquivo `LICENSE` com o texto correspondente. Alternativa equivalente:
-
-```toml
-license-files = ["LICENSE"]
-```
-
-> MIT é o usual para código de artigo; CC-BY não é adequado para código. A escolha é do autor.
-
-Conferir:
+`license = "MIT"` em `pyproject.toml` e `LICENSE` na raiz. O porteiro confere:
 
 ```bash
 uv run python scripts/check_pypi.py
-# esperado: PyPI OK: patentometria 0.3.0
+# esperado: PyPI OK: patentometria 0.3.1
 ```
 
 ## 2. Publicar com Trusted Publishing (recomendado, sem token)
@@ -43,8 +29,8 @@ O workflow `.github/workflows/publish.yml` publica em qualquer tag `v*`.
 3. Publique:
 
 ```bash
-git tag -a v0.3.0 -m "Patentometria 0.3.0"
-git push origin v0.3.0
+git tag -a v0.3.1 -m "Patentometria 0.3.1"
+git push origin v0.3.1
 ```
 
 Acompanhar:
@@ -63,7 +49,7 @@ Se preferir publicar da máquina local:
 ```bash
 export UV_PUBLISH_TOKEN=pypi-...      # token de escopo "upload" criado em pypi.org/manage/account/token/
 uv build
-uv publish dist/patentometria-0.3.0-py3-none-any.whl dist/patentometria-0.3.0.tar.gz
+uv publish dist/patentometria-0.3.1-py3-none-any.whl dist/patentometria-0.3.1.tar.gz
 ```
 
 O token não deve ser colado em chat nem versionado. Para guardar sem variável de ambiente:
@@ -103,5 +89,7 @@ uv publish --token "$(cat ~/.config/pypi/patentometria.token)" dist/*
 ## 5. Estado em 19/10/2026
 
 - Nome `patentometria` consultado no PyPI: **livre** (HTTP 404).
-- `uv publish --dry-run` validou os metadados e parou por falta de credencial.
-- Licença ainda não definida — é o único bloqueio do porteiro.
+- Licença **MIT** definida; `check_pypi.py` passa.
+- Versão **0.3.1** (o release 0.3.0 no GitHub fica como pré-release histórico).
+- Pendente: cadastrar o *pending publisher* no PyPI e criar o environment `pypi` no GitHub.
+- Sem token configurado nesta máquina; a publicação deve sair pelo workflow (OIDC).

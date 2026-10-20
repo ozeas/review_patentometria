@@ -1,4 +1,4 @@
-PATENTOMETRIA 0.3.0 — INSTALACAO
+PATENTOMETRIA 0.3.1 — INSTALACAO
 
 Escolha o arquivo do seu sistema, na mesma pasta deste LEIA-ME:
 

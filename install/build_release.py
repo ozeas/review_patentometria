@@ -6,7 +6,7 @@ import zipfile
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
-VER = "0.3.0"
+VER = "0.3.1"
 DIST = RAIZ / "dist"
 PACOTES = {
     "windows": ["install.ps1", "LEIA-ME.txt"],
