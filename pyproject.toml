@@ -8,6 +8,20 @@ version = "0.3.0"
 description = "Pipeline de análise patentométrica do artigo PGEN1075/UFES (GC x petróleo, upstream)"
 readme = "README.md"
 requires-python = ">=3.11"
+authors = [{ name = "Ozeas Souza" }]
+keywords = ["patentometria", "patentes", "bibliometria", "petroleo", "cromatografia gasosa"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: Portuguese",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+]
+# license = "MIT"   # decisão pendente: defina antes do primeiro `uv publish` (docs/PYPI.md)
 dependencies = [
     "Django==5.2.18",
     "openpyxl==3.1.5",
@@ -24,7 +38,17 @@ patentometria = "config.cli:main"
 packages = ["config", "core", "studies"]
 
 [tool.hatch.build.targets.sdist]
-include = ["config", "core", "studies", "README.md", "requirements.txt"]
+include = [
+    "config",
+    "core",
+    "studies",
+    "README.md",
+    "requirements.txt",
+    "docs/INSTALACAO.md",
+    "install",
+    "scripts",
+    "tests",
+]
 
 [tool.uv]
 package = true

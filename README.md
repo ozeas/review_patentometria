@@ -39,6 +39,8 @@ Os dados (banco, uploads, logs) ficam na pasta do usuário — `patentometria wh
 O padrão é **somente local** (`127.0.0.1`); para abrir na rede, use `patentometria serve --host 0.0.0.0`
 e libere a porta no firewall.
 
+Publicação no PyPI: metadados e workflow em [`docs/PYPI.md`](docs/PYPI.md).
+
 ### Desenvolvimento
 
 Requer Python 3.11 ou superior. As versões das dependências estão fixadas
