@@ -1,5 +1,6 @@
 """Estrutura do guia de uso (docs/guia) e do site publicado no GitHub Pages."""
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -26,6 +27,7 @@ class GuiaTests(unittest.TestCase):
             for bloco in ("Objetivo", "O que fazer", "Como interpretar", "Checkpoint"):
                 self.assertIn(bloco, texto, f"{passo.name}: falta {bloco}")
 
+    @unittest.skipUnless(shutil.which("pdfinfo"), "pdfinfo não instalado")
     def test_pdf_existe_e_tem_paginas(self):
         pdf = GUIA / "guia.pdf"
         self.assertTrue(pdf.exists())
