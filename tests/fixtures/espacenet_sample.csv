@@ -1,24 +1,24 @@
 "Espacenet";"";"";"";"";"";"";"";"";
 "Patent search";"";"";"";"";"";"";"";"";
-"4 results found for (ta = ""gas chromatography"")";"";"";"";"";"";"";"";"";
+"4 results found for (ta = ""optical sensing"")";"";"";"";"";"";"";"";"";
 "Results 1 to 4 displayed";"";"";"";"";"";"";"";"";
 "Query language: en";"";"";"";"";"";"";"";"";
 "Sort by: Relevance";"";"";"";"";"";"";"";"";
 "Filters: Countries (family): (CN OR US OR WO OR EP)";"";"";"";"";"";"";"";"";
 "No";"Title";"Inventors";"Applicants";"Publication number";"Earliest priority";"IPC";"CPC";"Publication date";"Earliest publication";"Family number";
-"1";"WIRLELINE DOWNHOLE GAS CHROMATOGRAPH AND DOWNHOLE GAS CHROMATOGRAPHY METHOD";"IAKIMOV MIKHAIL NIKOLAEVICH [RU]";"SCHLUMBERGER TECHNOLOGY COR OR [US]";"US2010018287A1";"2005-12-29";"G01N30/02";"E21B49/10 (EP,US)
-G01N30/20 (EP,US)";"2010-01-28";"2007-07-12";"038228629";
-"2";"Biomarker gas chromatograph-high resolved flight time mass spectrographic analysis method in crude oil or sediment";"ZHENGUANG LI [CN]
-WEI FANG [CN]
-ZHENGUANG LI";"DAQING OILFIELD CO LTD [CN]
-DAQING OILFIELD CO LTD";"CN101413931A
+"1";"WIRLELINE DOWNHOLE GAS CHROMATOGRAPH AND DOWNHOLE GAS CHROMATOGRAPHY METHOD";"SMITH JOHN A [RU]";"NORTHWIND SENSORS CORP [US]";"US2010018287A1";"2005-12-29";"G01N27/22";"G01N27/22 (EP,US)
+G01N27/22 (EP,US)";"2010-01-28";"2007-07-12";"038228629";
+"2";"Biomarker optical sensor-high resolved flight time mass spectrographic analysis method in soil sample or soil";"WANG XIAOMING [CN]
+LI HUA [CN]
+WANG XIAOMING";"ACME SENSORS LTD [CN]
+ACME SENSORS LTD";"CN101413931A
 CN101413931B";"2008-11-25";"G01N27/64
-G01N30/02";"";"2009-04-22
+G01N27/22";"";"2009-04-22
 2011-07-27";"2009-04-22";"040594565";
-"3";"Drilling site detection drilling fluid hydro carbons gas chromatograph for gas content";"YUE XIFENG";"SINOPEC PETROLEUM ENG TECHNOLOGY SERVICE CO LTD";"CN205720124U";"2016-04-20";"B01D19/00
-E21B49/08";"";"2016-11-23";"2016-11-23";"057298245";
-"4";"Method for analyzing total reactive sulfur";"ROUSSIS STILIANOS GEORGE [CA]";"EXXON RESEARCH ENGINEERING CO [US]";"CA2329818A1
-CA2329818C";"1998-05-12";"G01N30/72
-G01N33/28";"G01N33/287 (EP)
-G01N30/78, G01N30/68, ADD (EP,US)      ";"1999-11-18
+"3";"Drilling site detection irrigation fluid hydro carbons optical sensor for gas content";"KIM HYUN";"HELIOS CONTROLS CO LTD";"CN205720124U";"2016-04-20";"G01N1/00
+G01N33/24";"";"2016-11-23";"2016-11-23";"057298245";
+"4";"Method for analyzing total dissolved salts";"JONES ALAN [CA]";"BLUERIVER INSTRUMENTS INC [US]";"CA2329818A1
+CA2329818C";"1998-05-12";"G01N27/02
+G01N33/24";"G01N33/24 (EP)
+G01N27/04, G01N27/06, ADD (EP,US)      ";"1999-11-18
 2007-12-11";"1999-11-18";"022132660";

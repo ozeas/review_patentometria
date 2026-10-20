@@ -13,11 +13,12 @@ from studies import models as m
 
 
 class PresetTests(TestCase):
-    def test_presets_do_pacote_estao_disponiveis(self):
+    def test_presets_do_pacote_sao_genericos(self):
         nomes = {p.name for p in listar_presets()}
-        self.assertIn("gc-petroleo-upstream.json", nomes)
-        cfg = carregar_preset(DIR_PADRAO / "gc-petroleo-upstream.json")
-        self.assertTrue(cfg["blocks"])
+        self.assertEqual(nomes, {"vazio.json"})
+        cfg = carregar_preset(DIR_PADRAO / "vazio.json")
+        self.assertEqual(cfg["blocks"][0]["name"], "(i) termo do tema")
+        self.assertEqual(cfg["classification_block"], [])
 
     def test_salvar_e_listar_preset(self):
         d = Path(tempfile.mkdtemp())
@@ -49,9 +50,9 @@ class PresetTests(TestCase):
 
 
 class DefaultPresetTests(TestCase):
-    """Sem preset, o estudo nasce genérico (patentometria); o artigo é só preset."""
+    """Sem preset, o estudo nasce com o padrão genérico de patentometria."""
 
-    def test_config_padrao_e_generico_nao_o_artigo(self):
+    def test_config_padrao_e_generico(self):
         self.assertEqual(DEFAULT_CONFIG["blocks"][0]["name"], "(i) termo do tema")
         self.assertEqual(DEFAULT_CONFIG["classification_block"], [])
         self.assertEqual([s["code"] for s in DEFAULT_CONFIG["strata"]], ["S1", "S2"])
@@ -62,12 +63,12 @@ class DefaultPresetTests(TestCase):
         self.assertEqual(s.config["blocks"][0]["name"], "(i) termo do tema")
         self.assertEqual(s.config["classification_block"], [])
 
-    def test_novo_estudo_com_preset_do_artigo_reproduz_o_artigo(self):
-        call_command("novo_estudo", "--nome", "Artigo", "--preset",
-                     str(DIR_PADRAO / "gc-petroleo-upstream.json"), stdout=io.StringIO())
-        s = m.Study.objects.get(name="Artigo")
-        self.assertEqual(s.config["blocks"][0]["name"], "(i) cromatografia gasosa")
-        self.assertEqual(s.config["classification_block"], ["G01N", "C10G", "E21B 49"])
+    def test_novo_estudo_com_preset_vazio_e_generico(self):
+        call_command("novo_estudo", "--nome", "Com preset", "--preset",
+                     str(DIR_PADRAO / "vazio.json"), stdout=io.StringIO())
+        s = m.Study.objects.get(name="Com preset")
+        self.assertEqual(s.config["blocks"][0]["name"], "(i) termo do tema")
+        self.assertEqual(s.config["classification_block"], [])
 
 
 class StudyCreationUITests(TestCase):
@@ -78,10 +79,10 @@ class StudyCreationUITests(TestCase):
         self.assertEqual(s.config["blocks"][0]["name"], "(i) termo do tema")
         self.assertEqual(s.config["classification_block"], [])
 
-    def test_ui_com_preset_do_artigo_reproduz_o_artigo(self):
-        r = self.client.post("/", {"name": "UI artigo", "description": "",
-                                   "preset": "gc-petroleo-upstream.json"})
+    def test_ui_com_preset_vazio_e_generico(self):
+        r = self.client.post("/", {"name": "UI preset", "description": "",
+                                   "preset": "vazio.json"})
         self.assertEqual(r.status_code, 302)
-        s = m.Study.objects.get(name="UI artigo")
-        self.assertEqual(s.config["blocks"][0]["name"], "(i) cromatografia gasosa")
-        self.assertEqual(s.config["classification_block"], ["G01N", "C10G", "E21B 49"])
+        s = m.Study.objects.get(name="UI preset")
+        self.assertEqual(s.config["blocks"][0]["name"], "(i) termo do tema")
+        self.assertEqual(s.config["classification_block"], [])

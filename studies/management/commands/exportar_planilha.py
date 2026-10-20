@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *a, **o):
         rnd = m.Round.objects.get(pk=o["rodada"])
-        out = Path(o["saida"] or f"base_unificada_rodada{rnd.id}.xlsx")
+        out = Path(o["saida"] or f"base_patentometria_rodada{rnd.id}.xlsx")
         out.write_bytes(export.workbook_bytes(rnd))
         self.stdout.write(self.style.SUCCESS(f"Planilha: {out}"))
         if o["vos"]:

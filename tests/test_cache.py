@@ -38,7 +38,7 @@ class CacheTests(TestCase):
         services.resumo(self.rnd)
         fam = self.rnd.families.first()
         espiao = self._espiao()
-        services.save_decision(self.study, fam, stage1="incluir", stage2="incluir", stratum="C1")
+        services.save_decision(self.study, fam, stage1="incluir", stage2="incluir", stratum="S1")
         services.resumo(self.rnd)
         self.assertEqual(len(espiao), 1)                  # refez uma vez
 
@@ -52,7 +52,7 @@ class CacheTests(TestCase):
     def test_indicadores_saem_das_familias_gravadas(self):
         services.resumo(self.rnd)
         fam = self.rnd.families.first()
-        services.save_decision(self.study, fam, stage1="incluir", stage2="incluir", stratum="C1")
+        services.save_decision(self.study, fam, stage1="incluir", stage2="incluir", stratum="S1")
         espiao = self._espiao()
         d = services.indicators(self.rnd, "final")
         self.assertEqual(d["n"], 1)

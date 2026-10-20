@@ -66,8 +66,8 @@ class ParserTests(TestCase):
         recs = PARSERS["espacenet"]((FIX / "espacenet_sample.csv").read_text(encoding="utf-8"), "nucleo")
         self.assertEqual(len(recs), 4)
         self.assertEqual(recs[1].pub_numbers, ["CN101413931"])
-        self.assertEqual(recs[1].applicants, ["DAQING OILFIELD CO LTD"])
-        self.assertEqual(recs[3].cpc, ["G01N 33/287", "G01N 30/78"])
+        self.assertEqual(recs[1].applicants, ["ACME SENSORS LTD"])
+        self.assertEqual(recs[3].cpc, ["G01N 33/24", "G01N 27/04"])
         self.assertTrue(recs[2].is_utility_model_only())
 
     def test_derwent_cr_separator_and_sections(self):
@@ -79,14 +79,14 @@ class ParserTests(TestCase):
         r = recs[1]
         self.assertIn("vapor phase", r.dwpi_novelty)
         self.assertTrue(r.dwpi_use.startswith("The method"))
-        self.assertEqual(r.applicants, ["SGS NORTH AMERICA INC"])
+        self.assertEqual(r.applicants, ["GREENFIELD ANALYTICS INC"])
         self.assertIn("US2010018287", r.cited_patents)
         self.assertEqual(r.earliest_priority, date(2010, 7, 19))
 
     def test_google_names(self):
         recs = PARSERS["google"]((FIX / "google_sample.csv").read_text(encoding="utf-8"), "nucleo")
         self.assertEqual(recs[1].applicants, ["SCHLUMBERGER TECHNOLOGY CORPORATION, INC."])
-        self.assertEqual(recs[0].inventors, ["李振广", "方伟", "宋桂侠"])
+        self.assertEqual(recs[0].inventors, ["王小明", "李华", "张伟"])
 
 
 class ConsolidationTests(TestCase):
@@ -114,11 +114,11 @@ class ConsolidationTests(TestCase):
 
 class PipelineTests(TestCase):
     def test_fields_prevalence_and_decisions(self):
-        dic = Dictionaries(applicants={"大庆油田有限责任公司": ("DAQING OILFIELD CO LTD", "CNPC")})
+        dic = Dictionaries(applicants={"宏达传感器有限公司": ("ACME SENSORS LTD", "ACME")})
         dec = [Decision(numbers=["CN101413931"], stage1="incluir", stage2="incluir",
-                        stage2_reason="Exploração", stratum="C1"),
+                        stage2_reason="Segmento incluído", stratum="S1"),
                Decision(numbers=["WO1999058951"], stage1="incluir", stage2="excluir",
-                        stage2_reason="Downstream"),
+                        stage2_reason="Segmento excluído"),
                Decision(numbers=["US2016168990"], stage1="excluir", stage1_reason="Falso positivo lexical")]
         result = run(load_all() + load_all("BR")[:0], dictionaries=dic, decisions=dec)
         fams = {f["fields"]["publications"][0]: f for f in result.families}
@@ -141,7 +141,7 @@ class PipelineTests(TestCase):
         self.assertEqual(p["stage1_excluded"], 1)
         self.assertEqual(p["stage2_excluded"], 1)
         self.assertEqual(p["final"], 1)
-        self.assertEqual(p["strata"]["C1"], 1)
+        self.assertEqual(p["strata"]["S1"], 1)
         indicators = result.indicators("unificada")
         self.assertEqual(indicators["rede_citacoes_internas"]["arestas"], 2)
         self.assertIsNotNone(fams)
@@ -159,17 +159,17 @@ class IndicatorTests(TestCase):
         self.assertAlmostEqual(c["Gini"], 0.35, places=2)
 
     def test_lexical(self):
-        blocks = compile_blocks([{"name": "a", "terms": ["gas chromatograph*"]},
-                                 {"name": "b", "terms": ["crude oil", "downhole"]}])
-        self.assertEqual(lexical_profile("Downhole gas chromatograph", "", blocks)["level"], "titulo")
-        self.assertEqual(lexical_profile("GC device", "gas chromatography of crude-oil", blocks)["level"],
+        blocks = compile_blocks([{"name": "a", "terms": ["optical sensor*"]},
+                                 {"name": "b", "terms": ["soil sample", "field site"]}])
+        self.assertEqual(lexical_profile("Field site optical sensor", "", blocks)["level"], "titulo")
+        self.assertEqual(lexical_profile("OS device", "optical sensor of soil-sample", blocks)["level"],
                          "titulo+resumo")
 
 
 class VosTests(TestCase):
     def test_thesaurus_order_and_clusters(self):
-        th = build_thesaurus([{"label": "gc-ms", "replace_by": "gc ms"}, {"label": "method", "replace_by": ""}])
-        self.assertTrue(th.strip().splitlines()[-1].endswith("gc ms"))
+        th = build_thesaurus([{"label": "sensor-ms", "replace_by": "sensor ms"}, {"label": "method", "replace_by": ""}])
+        self.assertTrue(th.strip().splitlines()[-1].endswith("sensor ms"))
         mp = parse_map("id\tlabel\tx\ty\tcluster\tweight<Occurrences>\tscore<Ano de prioridade>\n"
                        "1\ta\t0\t0\t1\t4\t2010\n2\tb\t0\t0\t1\t2\t2016\n3\tc\t0\t0\t2\t3\t2020\n")
         net = parse_network("1\t2\t3\n2\t3\t1\n")

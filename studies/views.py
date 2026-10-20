@@ -464,7 +464,7 @@ def export_xlsx(request, pk):
     rnd = get_object_or_404(m.Round, pk=pk)
     resp = HttpResponse(export.workbook_bytes(rnd),
                         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    resp["Content-Disposition"] = f'attachment; filename="base_unificada_{rnd.study.id}_{rnd.id}.xlsx"'
+    resp["Content-Disposition"] = f'attachment; filename="base_patentometria_{rnd.study.id}_{rnd.id}.xlsx"'
     return resp
 
 

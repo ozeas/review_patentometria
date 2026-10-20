@@ -2,7 +2,7 @@
 # Instalador da Patentometria para Linux (sem sudo).
 set -euo pipefail
 
-VER="0.3.1"
+VER="0.4.0"
 AQUI="$(cd "$(dirname "$0")" && pwd)"
 WHEEL="$AQUI/patentometria-$VER-py3-none-any.whl"
 
@@ -36,7 +36,7 @@ cat > "$MENU" <<EOF
 [Desktop Entry]
 Type=Application
 Name=Patentometria
-Comment=Análise patentométrica (PGEN1075/UFES)
+Comment=Análise patentométrica
 Exec=$BIN
 Icon=applications-science
 Terminal=false

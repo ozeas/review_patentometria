@@ -1,8 +1,7 @@
 # Publicação no PyPI
 
-Pacote configurado (`pyproject.toml`, `LICENSE` MIT e `.github/workflows/publish.yml`), versão
-**0.3.1**. Falta apenas o cadastro do *pending publisher* na conta do PyPI — depois disso a publicação
-é automática a cada tag `v*`.
+Pacote publicado no PyPI (`patentometria 0.3.1`, 19/10/2026) com *pending publisher* já cadastrado.
+A versão **0.4.0** sai automaticamente ao empurrar a tag `v0.4.0`.
 
 ## 1. Licença (definida)
 
@@ -10,7 +9,7 @@ Pacote configurado (`pyproject.toml`, `LICENSE` MIT e `.github/workflows/publish
 
 ```bash
 uv run python scripts/check_pypi.py
-# esperado: PyPI OK: patentometria 0.3.1
+# esperado: PyPI OK: patentometria 0.4.0
 ```
 
 ## 2. Publicar com Trusted Publishing (recomendado, sem token)
@@ -29,8 +28,8 @@ O workflow `.github/workflows/publish.yml` publica em qualquer tag `v*`.
 3. Publique:
 
 ```bash
-git tag -a v0.3.1 -m "Patentometria 0.3.1"
-git push origin v0.3.1
+git tag -a v0.4.0 -m "Patentometria 0.4.0"
+git push origin v0.4.0
 ```
 
 Acompanhar:
@@ -49,7 +48,7 @@ Se preferir publicar da máquina local:
 ```bash
 export UV_PUBLISH_TOKEN=pypi-...      # token de escopo "upload" criado em pypi.org/manage/account/token/
 uv build
-uv publish dist/patentometria-0.3.1-py3-none-any.whl dist/patentometria-0.3.1.tar.gz
+uv publish dist/patentometria-0.4.0-py3-none-any.whl dist/patentometria-0.4.0.tar.gz
 ```
 
 O token não deve ser colado em chat nem versionado. Para guardar sem variável de ambiente:
@@ -81,15 +80,14 @@ uv publish --token "$(cat ~/.config/pypi/patentometria.token)" dist/*
 
 ## 4. Se precisar corrigir
 
-- **Versão já publicada não pode ser reutilizada.** Corrija e suba a versão (ex.: `0.3.1`).
+- **Versão já publicada não pode ser reutilizada.** Corrija e suba a versão (ex.: `0.4.0`).
 - **Yank** (não apaga) em *Manage → Releases → Yank*; útil quando a versão está quebrada.
 - O `dist/` é ignorado pelo git (`dist/.gitignore` do próprio `uv`); os artefatos vivem no GitHub
   Releases e no PyPI, não no repositório.
 
 ## 5. Estado em 19/10/2026
 
-- Nome `patentometria` consultado no PyPI: **livre** (HTTP 404).
-- Licença **MIT** definida; `check_pypi.py` passa.
-- Versão **0.3.1** (o release 0.3.0 no GitHub fica como pré-release histórico).
-- Pendente: cadastrar o *pending publisher* no PyPI e criar o environment `pypi` no GitHub.
-- Sem token configurado nesta máquina; a publicação deve sair pelo workflow (OIDC).
+- `patentometria 0.3.1` publicada em 19/10/2026 (Trusted Publishing, workflow `publish.yml`).
+- Licença **MIT**; `check_pypi.py` passa.
+- Versão **0.4.0** pronta para publicar (contexto genérico; preset antigo removido).
+- Environment `pypi` criado no GitHub; sem token local — a publicação sai pelo workflow (OIDC).

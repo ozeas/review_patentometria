@@ -1,4 +1,4 @@
-"""Geração da planilha base (fonte única dos números do artigo).
+"""Geração da planilha base (fonte única dos números do estudo).
 
 As abas de registros, famílias e decisões trazem os dados; as abas PRISMA e
 Estratos usam fórmulas sobre essas abas, de modo que qualquer contagem do

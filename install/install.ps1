@@ -1,6 +1,6 @@
 # Instalador da Patentometria para Windows (sem administrador).
 $ErrorActionPreference = "Stop"
-$Ver = "0.3.1"
+$Ver = "0.4.0"
 $Aqui = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Wheel = Join-Path $Aqui "patentometria-$Ver-py3-none-any.whl"
 
@@ -31,7 +31,7 @@ $Ws = New-Object -ComObject WScript.Shell
 $AtalhoDesktop = $Ws.CreateShortcut((Join-Path ([Environment]::GetFolderPath("Desktop")) "Patentometria.lnk"))
 $AtalhoDesktop.TargetPath = $Shim
 $AtalhoDesktop.WorkingDirectory = $env:USERPROFILE
-$AtalhoDesktop.Description = "Analise patentometrica (PGEN1075/UFES)"
+$AtalhoDesktop.Description = "Analise patentometrica"
 $AtalhoDesktop.Save()
 
 $MenuIniciar = Join-Path ([Environment]::GetFolderPath("StartMenu")) "Programs"
@@ -39,7 +39,7 @@ New-Item -ItemType Directory -Force -Path $MenuIniciar | Out-Null
 $AtalhoMenu = $Ws.CreateShortcut((Join-Path $MenuIniciar "Patentometria.lnk"))
 $AtalhoMenu.TargetPath = $Shim
 $AtalhoMenu.WorkingDirectory = $env:USERPROFILE
-$AtalhoMenu.Description = "Analise patentometrica (PGEN1075/UFES)"
+$AtalhoMenu.Description = "Analise patentometrica"
 $AtalhoMenu.Save()
 
 & $Shim --check

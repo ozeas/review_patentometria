@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-VER="0.3.1"
+VER="0.4.0"
 WHEEL="$PWD/patentometria-$VER-py3-none-any.whl"
 if [ ! -f "$WHEEL" ]; then
   echo "ERRO: wheel não encontrado em $WHEEL"
@@ -30,9 +30,9 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 <dict>
   <key>CFBundleName</key><string>Patentometria</string>
   <key>CFBundleDisplayName</key><string>Patentometria</string>
-  <key>CFBundleIdentifier</key><string>br.ufes.ppgen.patentometria</string>
-  <key>CFBundleVersion</key><string>0.3.1</string>
-  <key>CFBundleShortVersionString</key><string>0.3.1</string>
+  <key>CFBundleIdentifier</key><string>io.github.ozeas.patentometria</string>
+  <key>CFBundleVersion</key><string>0.4.0</string>
+  <key>CFBundleShortVersionString</key><string>0.4.0</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleExecutable</key><string>Patentometria</string>
   <key>LSMinimumSystemVersion</key><string>11.0</string>

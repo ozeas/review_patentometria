@@ -25,7 +25,7 @@ class PyPiMetaTests(unittest.TestCase):
 
     def test_nome_precisa_ser_pypi(self):
         meta = _completo()
-        meta["project"]["name"] = "Patentometria UFES"
+        meta["project"]["name"] = "Patentometria Nacional"
         self.assertTrue(any("nome inválido" in e for e in validar(meta, RAIZ)))
 
     def test_versao_precisa_pep440(self):

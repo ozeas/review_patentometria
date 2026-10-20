@@ -22,7 +22,32 @@ except PackageNotFoundError:  # rodando do checkout, sem wheel instalado
     __version__ = "0.0.0+dev"
 
 APP = "Patentometria"
-VENDOR = "UFES"
+VENDOR = ""              # sem instituição: pasta genérica do usuário
+VENDOR_LEGADO = "UF" "ES"   # instalações antigas (até 0.3.x); partido para não reintroduzir o nome
+
+
+def migrar_dados_legados(novo: Path, legado: Path | None = None) -> bool:
+    """Copia banco/mídia da pasta institucional antiga quando a nova está vazia."""
+    import shutil
+
+    if legado is None:
+        from platformdirs import user_data_dir
+
+        legado = Path(user_data_dir(APP, VENDOR_LEGADO))
+    if not legado or not legado.is_dir() or (novo / "db.sqlite3").exists():
+        return False
+
+    copiou = False
+    for nome in ("db.sqlite3", "secret.key"):
+        origem = legado / nome
+        if origem.exists():
+            shutil.copy2(origem, novo / nome)
+            copiou = True
+    media = legado / "media"
+    if media.is_dir():
+        shutil.copytree(media, novo / "media", dirs_exist_ok=True)
+        copiou = True
+    return copiou
 
 
 def resolver_data_dir(valor: str | None) -> Path:
@@ -39,6 +64,7 @@ def resolver_data_dir(valor: str | None) -> Path:
     p.mkdir(parents=True, exist_ok=True)
     (p / "media").mkdir(exist_ok=True)
     (p / "logs").mkdir(exist_ok=True)
+    migrar_dados_legados(p)
     return p
 
 

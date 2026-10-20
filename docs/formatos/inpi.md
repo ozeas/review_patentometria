@@ -10,7 +10,7 @@
 
 `https://busca.inpi.gov.br` — a busca é por **classificação** (via principal) e por texto em
 português (via de controle; documento INPI em PT não casa com palavra-chave em inglês). Ver
-`consultas_bases_patentes.md`, seção INPI, no repositório do doutorado.
+o documento de consultas do projeto.
 
 ## Colunas esperadas (sinônimos aceitos)
 

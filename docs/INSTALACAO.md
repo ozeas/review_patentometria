@@ -5,7 +5,7 @@ Aplicação local. Não precisa de servidor, conta ou internet depois de instala
 
 ## Windows
 
-1. Baixe `patentometria-0.3.1-windows.zip` e extraia em uma pasta (ex.: `Downloads\patentometria`).
+1. Baixe `patentometria-0.4.0-windows.zip` e extraia em uma pasta (ex.: `Downloads\patentometria`).
 2. Clique com o botão direito em `install.ps1` → **Executar com PowerShell**.
    Se o Windows bloquear:
    ```powershell
@@ -14,11 +14,11 @@ Aplicação local. Não precisa de servidor, conta ou internet depois de instala
 3. Ao final, aparecem atalhos **no Desktop e no Menu Iniciar**.
 4. Abra *Patentometria*. O navegador abre em `http://127.0.0.1:8080`.
 
-Dados: `%LOCALAPPDATA%\UFES\Patentometria`
+Dados: `%LOCALAPPDATA%\Patentometria`
 
 ## macOS
 
-1. Baixe `patentometria-0.3.1-macos.zip` e extraia.
+1. Baixe `patentometria-0.4.0-macos.zip` e extraia.
 2. Duplo clique em `install.command`. Se o macOS bloquear: clique com o botão direito → **Abrir**.
    Alternativa:
    ```bash
@@ -32,7 +32,7 @@ Dados: `~/Library/Application Support/Patentometria`
 ## Linux
 
 ```bash
-unzip patentometria-0.3.1-linux.zip -d patentometria
+unzip patentometria-0.4.0-linux.zip -d patentometria
 cd patentometria
 chmod +x install.sh
 ./install.sh
@@ -88,7 +88,7 @@ A instalação **não** importa o banco da máquina de origem. Para levar um cor
 uv tool uninstall patentometria
 ```
 
-Windows/macOS: apague os atalhos e, se quiser, `%LOCALAPPDATA%\UFES\Patentometria` ou
+Windows/macOS: apague os atalhos e, se quiser, `%LOCALAPPDATA%\Patentometria` ou
 `~/Library/Application Support/Patentometria`. A pasta de dados **não** é removida pelo desinstalador.
 
 ## Problemas comuns
@@ -113,7 +113,7 @@ uv run python scripts/smoke_wheel.py    # instala o wheel em ambiente limpo
 Publicação no PyPI (requer token em `UV_PUBLISH_TOKEN`):
 
 ```bash
-uv publish dist/patentometria-0.3.1-py3-none-any.whl dist/patentometria-0.3.1.tar.gz
+uv publish dist/patentometria-0.4.0-py3-none-any.whl dist/patentometria-0.4.0.tar.gz
 ```
 
 O nome `patentometria` precisa estar livre no PyPI e o pacote deve ter licença definida antes da

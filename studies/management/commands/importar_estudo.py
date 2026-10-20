@@ -2,7 +2,7 @@
 
     python manage.py importar_estudo estudo_1.json                 # atualiza o estudo de mesmo nome
     python manage.py importar_estudo estudo_1.json --estudo 2      # aplica no estudo 2
-    python manage.py importar_estudo estudo_1.json --renomear "GC x petróleo (restaurado)"
+    python manage.py importar_estudo estudo_1.json --renomear "Estudo restaurado"
 
 Decisões e ligações são casadas por número de publicação, de modo que
 reimportar o mesmo arquivo não duplica nada. ``--substituir`` apaga antes as

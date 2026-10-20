@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "patentometria"
-version = "0.3.1"
-description = "Pipeline de análise patentométrica do artigo PGEN1075/UFES (GC x petróleo, upstream)"
+version = "0.4.0"
+description = "Pipeline de análise patentométrica: famílias, triagem, indicadores, VOSviewer e planilha base"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Ozeas Souza" }]
-keywords = ["patentometria", "patentes", "bibliometria", "petroleo", "cromatografia gasosa"]
+keywords = ["patentometria", "patentes", "bibliometria", "analise de dados"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",

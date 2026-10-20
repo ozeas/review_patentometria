@@ -55,6 +55,17 @@ class CliTests(SimpleTestCase):
         self.assertIn("127.0.0.1", hosts)
         self.assertIn("localhost", hosts)
 
+    def test_migra_dados_da_pasta_antiga(self):
+        novo = Path(tempfile.mkdtemp())
+        antigo = Path(tempfile.mkdtemp())
+        (antigo / "db.sqlite3").write_bytes(b"x")
+        (antigo / "media").mkdir()
+        (antigo / "media" / "a.txt").write_text("ok", encoding="utf-8")
+        self.assertTrue(cli.migrar_dados_legados(novo, antigo))
+        self.assertTrue((novo / "db.sqlite3").exists())
+        self.assertTrue((novo / "media" / "a.txt").exists())
+        self.assertFalse(cli.migrar_dados_legados(novo, antigo))
+
     def test_check_flag_curto(self):
         import subprocess
         import sys

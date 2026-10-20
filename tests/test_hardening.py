@@ -75,7 +75,7 @@ class RegressaoGateTests(TestCase):
         self.ref_ok.write_text(json.dumps({"prisma": {k: prisma[k] for k in
                                                       ("identified", "excluded_utility", "eligible", "families")}}))
         self.ref_ruim = self.tmp / "ruim.json"
-        self.ref_ruim.write_text(json.dumps({"prisma": {"identified": 669, "eligible": 655}}))
+        self.ref_ruim.write_text(json.dumps({"prisma": {"identified": 12, "eligible": 9}}))
 
     def test_referencia_que_bate_passa(self):
         out = io.StringIO()
@@ -102,7 +102,7 @@ class RegressaoGateTests(TestCase):
         # três arquivos com consulta declarada; o do Lens tem só evidência
         self.rnd.files.exclude(source="lens").update(query_text="(ta = oil)")
         self.rnd.files.filter(source="lens").update(query_text="",
-                                                    query_no_arquivo='(ta = "gas chromatography")')
+                                                    query_no_arquivo='(ta = "optical sensor")')
         out = io.StringIO()
         with self.assertRaises(SystemExit) as ctx:
             call_command("executar_rodada", self.rnd.id, exigir_consulta=True, stdout=out)
@@ -188,12 +188,12 @@ class BackupDoTrabalhoTests(TestCase):
         services.run_round(self.rnd)
         fam = self.rnd.families.get(anchor="CN101413931")
         services.save_decision(self.study, fam, stage1="incluir", stage2="incluir",
-                               stage2_reason="Exploração", stratum="C1")
+                               stage2_reason="Segmento incluído", stratum="S1")
         m.ManualLink.objects.create(study=self.study, number_a="CN101413931", number_b="US2010012345",
                                     reason="mesma prioridade")
-        services.upsert_applicant(self.study, "大庆油田有限责任公司", "DAQING OILFIELD CO LTD", "CNPC")
+        services.upsert_applicant(self.study, "宏达传感器有限公司", "ACME SENSORS LTD", "ACME")
         services.upsert_inventor(self.study, "张三", "ZHANG SAN")
-        m.ThesaurusEntry.objects.create(study=self.study, label="gas chromatograph", replace_by="gas chromatography")
+        m.ThesaurusEntry.objects.create(study=self.study, label="gas chromatograph", replace_by="optical sensor")
         self.tmp = Path(tempfile.mkdtemp())
         self.json = self.tmp / "estudo.json"
 
@@ -223,7 +223,7 @@ class BackupDoTrabalhoTests(TestCase):
         self.assertEqual(novo.inventor_aliases.count(), 1)
         self.assertEqual(novo.thesaurus.count(), 1)
         d = novo.decisions.get()
-        self.assertEqual((d.stage1, d.stage2, d.stratum), ("incluir", "incluir", "C1"))
+        self.assertEqual((d.stage1, d.stage2, d.stratum), ("incluir", "incluir", "S1"))
         # e a decisão restaurada vale para uma rodada nova do estudo restaurado
         rnd2 = m.Round.objects.create(study=novo, label="r2", collection_date=date(2026, 10, 15))
         for name in ("lens_sample.csv", "espacenet_sample.csv", "google_sample.csv", "derwent_sample.txt"):
@@ -280,7 +280,7 @@ class ConsultaSeparadaTests(TestCase):
 
     def test_comando_extrai_so_para_o_campo_de_evidencia(self):
         cabecalho = ('"Espacenet";"";\n"Patent search";"";\n'
-                     '"156 results found for (ta = ""gas chromatography"")";"";\n'
+                     '"156 results found for (ta = ""optical sensor"")";"";\n'
                      '"No";"Title";"Publication number"\n'
                      '"1";"T";"US1"\n')
         sf = services.ingest(self.rnd, SimpleUploadedFile("espacenet_nucleo.csv",
@@ -292,15 +292,15 @@ class ConsultaSeparadaTests(TestCase):
 
         sf.refresh_from_db()
         self.assertEqual(sf.query_text, "")                        # declarada continua vazia
-        self.assertIn("gas chromatography", sf.query_no_arquivo)    # evidência gravada
+        self.assertIn("optical sensor", sf.query_no_arquivo)    # evidência gravada
         self.assertIsNotNone(sf.query_no_arquivo_em)
 
     def test_registrar_consulta_por_texto_e_por_arquivo(self):
         sf = services.ingest(self.rnd, SimpleUploadedFile("lens_nucleo.csv",
                                                           (FIX / "lens_sample.csv").read_bytes()))
-        call_command("registrar_consulta", sf.id, texto="G01N30 AND crude oil", stdout=io.StringIO())
+        call_command("registrar_consulta", sf.id, texto="G01N30 AND soil sample", stdout=io.StringIO())
         sf.refresh_from_db()
-        self.assertEqual(sf.query_text, "G01N30 AND crude oil")
+        self.assertEqual(sf.query_text, "G01N30 AND soil sample")
 
         tmp = Path(tempfile.mkdtemp()) / "consulta.txt"
         tmp.write_text("G01N30 AND (oil OR crude)\n", encoding="utf-8")
@@ -311,11 +311,11 @@ class ConsultaSeparadaTests(TestCase):
     def test_provenance_distingue_declarada_de_evidencia(self):
         sf = services.ingest(self.rnd, SimpleUploadedFile("espacenet_nucleo.csv",
                                                           (FIX / "espacenet_sample.csv").read_bytes()))
-        sf.query_no_arquivo = '(ta = "gas chromatography")'
+        sf.query_no_arquivo = '(ta = "optical sensor")'
         sf.save()
         prov = services.provenance(self.rnd)
         self.assertEqual(prov["sem_consulta"], ["espacenet_nucleo.csv"])   # só a declarada conta
-        self.assertEqual(prov["arquivos"][0]["consulta_no_arquivo"], '(ta = "gas chromatography")')
+        self.assertEqual(prov["arquivos"][0]["consulta_no_arquivo"], '(ta = "optical sensor")')
         self.assertFalse(prov["arquivos"][0]["consulta_divergente"])
 
         sf.query_text = '(ta = "gas chromatograph")'

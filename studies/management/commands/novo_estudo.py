@@ -5,7 +5,7 @@
 
 Sem ``--preset`` o estudo nasce com o padrão genérico de patentometria
 (blocos, classificação, triagem e estratos a preencher). Use um preset
-(``presets/gc-petroleo-upstream.json``) para reproduzir o desenho do artigo.
+(``studies/presets/vazio.json``) para começar do padrão genérico.
 """
 from django.core.management.base import BaseCommand, CommandError
 

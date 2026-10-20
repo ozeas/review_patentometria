@@ -1,6 +1,6 @@
 """Importa todas as exportações de uma pasta para uma rodada.
 
-    python manage.py importar_rodada --estudo "GC x petróleo" --rodada "15/10/2026" \
+    python manage.py importar_rodada --estudo "Meu estudo" --rodada "01/01/2026" \
         --data 2026-10-15 --pasta ./dados/2026-10-15
 
 Base e recorte são deduzidos do conteúdo e do nome do arquivo

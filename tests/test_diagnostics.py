@@ -7,14 +7,13 @@ from core.config import DEFAULT_CONFIG
 from core.diagnostics import diagnosticar
 from core.parsers import parse_bytes
 from core.pipeline import run
-from core.presets import DIR_PADRAO, carregar_preset
 
-DADOS = Path.home() / "Documents/Shared/ppgen-doutorado/patentometria"
+FIX = Path(__file__).parent / "fixtures"
 
 
 def _corpus():
     recs = []
-    for f in sorted(DADOS.iterdir()):
+    for f in sorted(FIX.iterdir()):
         if f.suffix.lower() in (".csv", ".txt", ".tsv"):
             recs.extend(parse_bytes(f.read_bytes(), None, "nucleo")[1])
     return recs
@@ -24,8 +23,6 @@ class DiagnosticsTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.recs = _corpus()
-        if not cls.recs:
-            raise unittest.SkipTest("exportações reais não encontradas")
 
     def test_config_de_outro_tema_gera_aviso_de_lexico(self):
         cfg = copy.deepcopy(DEFAULT_CONFIG)
@@ -35,12 +32,6 @@ class DiagnosticsTests(unittest.TestCase):
         self.assertGreater(d["lexical_ausente_pct"], 90.0)
         self.assertTrue(any("lexical" in a.lower() for a in d["avisos"]))
         self.assertTrue(any("sensoriamento" in a for a in d["avisos"]))
-
-    def test_config_do_estudo_nao_gera_aviso_de_lexico(self):
-        artigo = carregar_preset(DIR_PADRAO / "gc-petroleo-upstream.json")
-        d = diagnosticar(run(self.recs, config=artigo))
-        self.assertLess(d["lexical_ausente_pct"], 50.0)
-        self.assertFalse(any("lexical" in a.lower() for a in d["avisos"]))
 
     def test_matriz_por_base_mostra_o_que_foi_exportado(self):
         d = diagnosticar(run(self.recs, config=copy.deepcopy(DEFAULT_CONFIG)))
