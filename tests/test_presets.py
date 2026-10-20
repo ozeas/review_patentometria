@@ -13,6 +13,12 @@ from studies import models as m
 
 
 class PresetTests(TestCase):
+    def test_presets_do_pacote_estao_disponiveis(self):
+        nomes = {p.name for p in listar_presets()}
+        self.assertIn("gc-petroleo-upstream.json", nomes)
+        cfg = carregar_preset(DIR_PADRAO / "gc-petroleo-upstream.json")
+        self.assertTrue(cfg["blocks"])
+
     def test_salvar_e_listar_preset(self):
         d = Path(tempfile.mkdtemp())
         estudo = m.Study.objects.create(name="Modelo")

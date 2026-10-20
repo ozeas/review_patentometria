@@ -6,7 +6,7 @@ from pathlib import Path
 
 from .config import normalize_config, validate_config
 
-DIR_PADRAO = Path(__file__).resolve().parent.parent / "presets"
+DIR_PADRAO = Path(__file__).resolve().parent.parent / "studies" / "presets"
 
 
 def listar_presets(dir_: Path | None = None) -> list[Path]:
