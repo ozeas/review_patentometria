@@ -8,7 +8,12 @@ register = template.Library()
 @register.filter
 def get(d, k):
     try:
-        return d.get(k) if hasattr(d, "get") else d[k]
+        if hasattr(d, "get"):
+            valor = d.get(k)
+            if valor is None and isinstance(k, int):
+                valor = d.get(str(k))  # chaves viram texto ao passar por JSON
+            return valor
+        return d[k]
     except (KeyError, IndexError, TypeError):
         return None
 

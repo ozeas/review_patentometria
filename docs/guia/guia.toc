@@ -1,0 +1,16 @@
+\babel@toc {brazilian}{}\relax 
+\contentsline {section}{Como usar este guia}{1}{Doc-Start}%
+\contentsline {section}{\numberline {1}Passo 1 — Abrir a aplicação e criar o estudo}{2}{section.1}%
+\contentsline {section}{\numberline {2}Passo 2 — Configurar o estudo}{3}{section.2}%
+\contentsline {section}{\numberline {3}Passo 3 — Criar a rodada e enviar as exportações}{5}{section.3}%
+\contentsline {section}{\numberline {4}Passo 4 — Consolidar e ler o fluxo PRISMA}{7}{section.4}%
+\contentsline {section}{\numberline {5}Passo 5 — Triagem, etapa 1: a família trata do tema?}{9}{section.5}%
+\contentsline {section}{\numberline {6}Passo 6 — Triagem, etapa 2, e classificação por estrato}{11}{section.6}%
+\contentsline {section}{\numberline {7}Passo 7 — Ligações manuais entre registros}{13}{section.7}%
+\contentsline {section}{\numberline {8}Passo 8 — Harmonizar depositantes e inventores}{15}{section.8}%
+\contentsline {section}{\numberline {9}Passo 9 — Ler a lista e a ficha de uma família}{16}{section.9}%
+\contentsline {section}{\numberline {10}Passo 10 — Indicadores descritivos}{19}{section.10}%
+\contentsline {section}{\numberline {11}Passo 11 — Gerar o pacote para o VOSviewer}{22}{section.11}%
+\contentsline {section}{\numberline {12}Passo 12 — Planilha base, importação e encerramento}{24}{section.12}%
+\contentsline {section}{\numberline {13}Glossário curto}{25}{section.13}%
+\contentsline {section}{\numberline {14}Problemas comuns}{25}{section.14}%

@@ -3,6 +3,9 @@
 Pipeline de análise patentométrica: importa exportações de bases de patentes, consolida famílias,
 aplica triagem em duas etapas, calcula indicadores, prepara o VOSviewer e gera a planilha base.
 
+**Guia de uso:** [versão web](https://ozeas.github.io/review_patentometria/) ·
+[PDF](docs/guia/guia.pdf) — passo a passo com capturas e explicação de cada bloco.
+
 ```
 Exportações (CSV/TXT) ──► Adaptadores por base ──► Normalização de números ──► Exclusão de modelos de utilidade
                                                                                          │

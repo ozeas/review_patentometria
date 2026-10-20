@@ -1,7 +1,7 @@
 # Publicação no PyPI
 
 Pacote publicado no PyPI (`patentometria 0.3.1`, 19/10/2026) com *pending publisher* já cadastrado.
-A versão **0.4.0** sai automaticamente ao empurrar a tag `v0.4.0`.
+A versão **0.4.1** sai automaticamente ao empurrar a tag `v0.4.1`.
 
 ## 1. Licença (definida)
 
@@ -9,7 +9,7 @@ A versão **0.4.0** sai automaticamente ao empurrar a tag `v0.4.0`.
 
 ```bash
 uv run python scripts/check_pypi.py
-# esperado: PyPI OK: patentometria 0.4.0
+# esperado: PyPI OK: patentometria 0.4.1
 ```
 
 ## 2. Publicar com Trusted Publishing (recomendado, sem token)
@@ -28,8 +28,8 @@ O workflow `.github/workflows/publish.yml` publica em qualquer tag `v*`.
 3. Publique:
 
 ```bash
-git tag -a v0.4.0 -m "Patentometria 0.4.0"
-git push origin v0.4.0
+git tag -a v0.4.1 -m "Patentometria 0.4.1"
+git push origin v0.4.1
 ```
 
 Acompanhar:
@@ -48,7 +48,7 @@ Se preferir publicar da máquina local:
 ```bash
 export UV_PUBLISH_TOKEN=pypi-...      # token de escopo "upload" criado em pypi.org/manage/account/token/
 uv build
-uv publish dist/patentometria-0.4.0-py3-none-any.whl dist/patentometria-0.4.0.tar.gz
+uv publish dist/patentometria-0.4.1-py3-none-any.whl dist/patentometria-0.4.1.tar.gz
 ```
 
 O token não deve ser colado em chat nem versionado. Para guardar sem variável de ambiente:
@@ -80,7 +80,7 @@ uv publish --token "$(cat ~/.config/pypi/patentometria.token)" dist/*
 
 ## 4. Se precisar corrigir
 
-- **Versão já publicada não pode ser reutilizada.** Corrija e suba a versão (ex.: `0.4.0`).
+- **Versão já publicada não pode ser reutilizada.** Corrija e suba a versão (ex.: `0.4.1`).
 - **Yank** (não apaga) em *Manage → Releases → Yank*; útil quando a versão está quebrada.
 - O `dist/` é ignorado pelo git (`dist/.gitignore` do próprio `uv`); os artefatos vivem no GitHub
   Releases e no PyPI, não no repositório.
@@ -89,5 +89,5 @@ uv publish --token "$(cat ~/.config/pypi/patentometria.token)" dist/*
 
 - `patentometria 0.3.1` publicada em 19/10/2026 (Trusted Publishing, workflow `publish.yml`).
 - Licença **MIT**; `check_pypi.py` passa.
-- Versão **0.4.0** pronta para publicar (contexto genérico; preset antigo removido).
+- Versão **0.4.1** pronta para publicar (contexto genérico; preset antigo removido).
 - Environment `pypi` criado no GitHub; sem token local — a publicação sai pelo workflow (OIDC).

@@ -12,3 +12,6 @@ dados/
 build/
 .smoke/
 
+docs/guia/*.aux
+docs/guia/*.out
+docs/guia/_site/

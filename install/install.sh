@@ -2,7 +2,7 @@
 # Instalador da Patentometria para Linux (sem sudo).
 set -euo pipefail
 
-VER="0.4.0"
+VER="0.4.1"
 AQUI="$(cd "$(dirname "$0")" && pwd)"
 WHEEL="$AQUI/patentometria-$VER-py3-none-any.whl"
 

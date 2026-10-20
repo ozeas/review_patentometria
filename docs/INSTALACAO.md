@@ -3,9 +3,11 @@
 Aplicação local. Não precisa de servidor, conta ou internet depois de instalada. Requer cerca de
 300 MB livres e um navegador atualizado.
 
+Depois de instalar, siga o [guia passo a passo](https://ozeas.github.io/review_patentometria/).
+
 ## Windows
 
-1. Baixe `patentometria-0.4.0-windows.zip` e extraia em uma pasta (ex.: `Downloads\patentometria`).
+1. Baixe `patentometria-0.4.1-windows.zip` e extraia em uma pasta (ex.: `Downloads\patentometria`).
 2. Clique com o botão direito em `install.ps1` → **Executar com PowerShell**.
    Se o Windows bloquear:
    ```powershell
@@ -18,7 +20,7 @@ Dados: `%LOCALAPPDATA%\Patentometria`
 
 ## macOS
 
-1. Baixe `patentometria-0.4.0-macos.zip` e extraia.
+1. Baixe `patentometria-0.4.1-macos.zip` e extraia.
 2. Duplo clique em `install.command`. Se o macOS bloquear: clique com o botão direito → **Abrir**.
    Alternativa:
    ```bash
@@ -32,7 +34,7 @@ Dados: `~/Library/Application Support/Patentometria`
 ## Linux
 
 ```bash
-unzip patentometria-0.4.0-linux.zip -d patentometria
+unzip patentometria-0.4.1-linux.zip -d patentometria
 cd patentometria
 chmod +x install.sh
 ./install.sh
@@ -113,7 +115,7 @@ uv run python scripts/smoke_wheel.py    # instala o wheel em ambiente limpo
 Publicação no PyPI (requer token em `UV_PUBLISH_TOKEN`):
 
 ```bash
-uv publish dist/patentometria-0.4.0-py3-none-any.whl dist/patentometria-0.4.0.tar.gz
+uv publish dist/patentometria-0.4.1-py3-none-any.whl dist/patentometria-0.4.1.tar.gz
 ```
 
 O nome `patentometria` precisa estar livre no PyPI e o pacote deve ter licença definida antes da

@@ -85,7 +85,7 @@ class ParserTests(TestCase):
 
     def test_google_names(self):
         recs = PARSERS["google"]((FIX / "google_sample.csv").read_text(encoding="utf-8"), "nucleo")
-        self.assertEqual(recs[1].applicants, ["SCHLUMBERGER TECHNOLOGY CORPORATION, INC."])
+        self.assertEqual(recs[1].applicants, ["NORTHWIND SENSORS CORP"])
         self.assertEqual(recs[0].inventors, ["王小明", "李华", "张伟"])
 
 

@@ -1,0 +1,28 @@
+{
+  "core_recorte": "nucleo",
+  "recortes": {"nucleo": "conjunto principal", "BR": "Brasil"},
+  "utility_kinds": ["U"],
+  "prio_link_min_digits": 8,
+  "periods": [[1971, 2009], [2010, 2019], [2020, 2026]],
+  "window_months": 36,
+  "collection_date": "2026-01-01",
+  "blocks": [
+    {"name": "(i) sensor óptico", "terms": ["optical sensor", "optical sensing"]},
+    {"name": "(ii) amostra ambiental", "terms": ["soil", "water sample"]}
+  ],
+  "classification_block": ["G01N 27/22"],
+  "stage1": {
+    "label": "Relação entre sensor e amostra",
+    "exclusion_reasons": ["Falso positivo lexical", "Outro domínio de aplicação"]
+  },
+  "stage2": {
+    "label": "Segmento de aplicação",
+    "inclusion_segments": ["Monitoramento de solo", "Análise de água"],
+    "exclusion_reasons": ["Segmento excluído", "Transversal"]
+  },
+  "strata": [
+    {"code": "S1", "name": "núcleo", "definition": "O sensor é o objeto da invenção."},
+    {"code": "S2", "name": "aplicado", "definition": "O sensor é instrumento de um método para outra finalidade."}
+  ],
+  "top_n": 15
+}

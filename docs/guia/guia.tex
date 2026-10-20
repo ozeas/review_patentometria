@@ -1,0 +1,183 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazilian]{babel}
+\usepackage{lmodern}
+\usepackage[scaled=0.90]{helvet}
+\usepackage{microtype}
+\usepackage[a4paper,top=2.5cm,bottom=2.6cm,left=2.5cm,right=2.5cm,headheight=21.3pt,footskip=1.3cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{amssymb}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{framed}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{navy}{HTML}{1F3A5F}
+\definecolor{navy2}{HTML}{2D5283}
+\definecolor{accent}{HTML}{B5651D}
+\definecolor{ink}{HTML}{1B2430}
+\definecolor{ink2}{HTML}{4A5566}
+\definecolor{ink3}{HTML}{7B8696}
+\definecolor{rule}{HTML}{E3E0D8}
+\definecolor{paper}{HTML}{FBFAF7}
+\definecolor{ok}{HTML}{2F6B3C}
+\definecolor{warn}{HTML}{9A6A00}
+
+\color{ink}
+\linespread{1.06}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+
+\titleformat{\section}{\sffamily\Large\bfseries\color{navy}}{\thesection}{0.6em}{}
+\titlespacing*{\section}{0pt}{2.4ex plus .6ex minus .2ex}{1.1ex}
+\titleformat{\subsection}{\sffamily\large\bfseries\color{ink}}{\thesubsection}{0.55em}{}
+\titlespacing*{\subsection}{0pt}{1.8ex plus .4ex}{0.7ex}
+\titleformat{\subsubsection}{\sffamily\bfseries\color{ink2}}{\thesubsubsection}{0.5em}{}
+
+\captionsetup{font={small,sf},labelfont={bf,color=accent},labelsep=period,skip=6pt}
+\captionsetup[table]{position=top}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{rule}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\sffamily\footnotesize\color{ink3}Patentometria --- guia passo a passo}
+\fancyhead[R]{\sffamily\footnotesize\color{ink3}\thepage}
+
+\renewenvironment{leftbar}{%
+  \def\FrameCommand{{\color{accent}\vrule width 2.6pt}\hspace{10pt}}%
+  \MakeFramed{\advance\hsize-\width\FrameRestore}}%
+ {\endMakeFramed}
+
+\newenvironment{nota}[1][Nota]%
+ {\begin{leftbar}\small\color{ink2}\textbf{\textsf{\color{accent}#1.}}\ }%
+ {\end{leftbar}}
+
+\newenvironment{alerta}[1][Cuidado]%
+ {\begin{leftbar}\small\color{ink2}\textbf{\textsf{\color{warn}#1.}}\ }%
+ {\end{leftbar}}
+
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcommand{\campo}[1]{\texttt{\small #1}}
+\newcommand{\num}[1]{\textsf{\textbf{#1}}}
+\newcommand{\marcador}{\textcolor{ok}{$\blacksquare$}}
+\renewcommand{\arraystretch}{1.15}
+\setlist[enumerate]{leftmargin=1.5em,itemsep=3pt,topsep=3pt}
+\setlist[itemize]{leftmargin=1.4em,itemsep=3pt,topsep=3pt}
+
+\begin{document}
+\begin{titlepage}
+\thispagestyle{empty}
+{\color{navy}\rule{\linewidth}{2.5pt}}\\[1.0cm]
+{\sffamily\footnotesize\color{ink3}PATENTOMETRIA \; · \; ANÁLISE DESCRITIVA DE PATENTES}\\[0.35cm]
+{\sffamily\bfseries\fontsize{31}{35}\selectfont\color{navy} Guia passo a passo}\\[0.35cm]
+{\sffamily\Large\color{ink2} Como usar e interpretar cada tela}\\[1.4cm]
+
+\begin{leftbar}
+\small\color{ink2}
+Este guia percorre a aplicação da primeira rodada até a leitura dos indicadores. Cada passo tem
+quatro blocos fixos: \textbf{Objetivo} (o que se quer obter), \textbf{O que fazer} (a sequência de
+cliques), \textbf{Como interpretar} (o que cada número e cada campo significam) e
+\textbf{Checkpoint} (como saber que o passo terminou certo).
+\end{leftbar}
+
+\vspace{0.6cm}
+{\sffamily\small\color{ink2}
+\textbf{Dados de demonstração.} As telas deste guia vêm de um estudo sintético sobre sensores ópticos
+aplicados a amostras ambientais, com quatro exportações de bases diferentes. O fluxo resultante é
+conhecido e serve de referência: \num{15} documentos identificados, \num{2} modelos de utilidade
+excluídos, \num{13} documentos elegíveis e \num{5} famílias após a deduplicação. Nenhum número aqui
+descreve um mercado real.}\\[0.8cm]
+{\sffamily\small\color{ink3}
+Versão da aplicação: 0.4.1 \quad · \quad Rodada de referência: 15/10/2026 \quad · \quad
+Capturas: outubro de 2026}\\[0.3cm]
+{\color{navy}\rule{\linewidth}{0.8pt}}
+\end{titlepage}
+
+\section*{Como usar este guia}
+\addcontentsline{toc}{section}{Como usar este guia}
+
+O trabalho tem seis abas, na ordem em que devem ser percorridas: \textbf{Coleta e consolidação},
+\textbf{Ligações}, \textbf{Nomes}, \textbf{Famílias e triagem}, \textbf{Indicadores} e
+\textbf{VOSviewer}. As abas \textbf{Importar} e \textbf{Planilha base} ficam à direita e servem para
+entrar e sair com os dados.
+
+Cada passo deste guia corresponde a uma decisão metodológica, não apenas a uma tela. A leitura correta
+é sempre a mesma: primeiro entenda \emph{o que está sendo contado} (documento, família, atribuição),
+depois \emph{qual é o denominador}, e só então compare o número com outra rodada ou com outro estudo.
+
+\begin{nota}[A regra dos três números]
+Todo indicador desta aplicação responde a três perguntas: qual é a unidade (documento? família?
+depositante?), qual é o denominador (quantas famílias têm o dado?) e qual é a data de corte (a coleta).
+Um percentual sem essas três informações não deve ser citado em texto.
+\end{nota}
+
+\tableofcontents
+\clearpage
+\input{secoes/passo_01}
+\input{secoes/passo_02}
+\input{secoes/passo_03}
+\input{secoes/passo_04}
+\input{secoes/passo_05}
+\input{secoes/passo_06}
+\input{secoes/passo_07}
+\input{secoes/passo_08}
+\input{secoes/passo_09}
+\input{secoes/passo_10}
+\input{secoes/passo_11}
+\input{secoes/passo_12}
+\section{Glossário curto}
+\label{sec:glossario}
+
+\begin{tabularx}{\linewidth}{@{}p{4.1cm}L@{}}
+\toprule
+\textbf{Termo} & \textbf{O que significa nesta aplicação} \\
+\midrule
+Documento & Registro de uma patente ou pedido em uma base (uma publicação). \\
+Família & Conjunto de documentos que protegem a mesma invenção; é a unidade de contagem da base unificada. \\
+Base unificada & Todas as famílias da rodada, depois de deduplicar os documentos entre as bases. \\
+Base final & Subconjunto que passou pelas etapas de triagem e pelos estratos. \\
+Estrato & Camada analítica definida no estudo (por exemplo, núcleo e aplicado). \\
+Atribuição & Cada vínculo entre uma família e um depositante, inventor ou classificação; uma família pode ter vários. \\
+CR4 / CR8 & Soma da participação dos quatro (ou oito) maiores depositantes. \\
+HHI & Soma dos quadrados das participações; varia de 0 a 10.000. \\
+Gini & Desigualdade na distribuição entre depositantes; 0 é igualdade perfeita. \\
+Anterioridade & Data do depósito mais antigo que sustenta a família. \\
+\bottomrule
+\end{tabularx}
+
+\section{Problemas comuns}
+\label{sec:problemas}
+
+\subsection*{O arquivo foi ignorado na importação}
+O nome precisa indicar base e recorte: \campo{lens\_nucleo.csv}, \campo{espacenet\_BR.csv},
+\campo{darwent\_nucleo.txt}. Arquivos com ``concepts'' no nome são descartados de propósito.
+
+\subsection*{O aviso ``sem consulta declarada'' não sai}
+Cada exportação pode trazer a consulta no cabeçalho (Espacenet e Google) ou em um arquivo
+\campo{<base>\_query.txt}. Sem isso, a rodada perde a proveniência: você sabe o resultado, mas não
+consegue repetir a busca.
+
+\subsection*{Os números do PRISMA não fecham}
+Identificados menos modelos de utilidade deve ser igual a elegíveis. Se não for, verifique se algum
+arquivo foi importado duas vezes na mesma rodada (use \campo{--substituir} ao reimportar).
+
+\subsection*{A tela de indicadores está vazia}
+Confira o seletor de conjunto: \emph{base unificada} mostra todas as famílias; \emph{base final} só
+mostra o que passou pela triagem. Sem decisões, a base final tem zero famílias.
+
+\subsection*{O VOSviewer importou um corpus vazio}
+O pacote usa a base final. Se a triagem ainda não foi concluída, o arquivo sai sem famílias --- o que
+é um aviso, não um erro de exportação.
+
+\end{document}

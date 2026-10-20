@@ -63,9 +63,8 @@
       <div class="step">Elegíveis à deduplicação <b>{{ prisma.eligible }}</b></div>
       <div class="exc">Redundantes (mesma família) <b>{{ prisma.redundant }}</b> ({{ prisma.redundant_pct|pct1 }}%)</div>
       <div class="step">Base unificada <b>{{ prisma.families }}</b> famílias
-        <div class="small muted">em 4 bases {{ prisma.families_by_n_sources|get:4 }} · em 1 base {{ prisma.families_by_n_sources|get:1 }}
-          ({% for s in sources %}{{ labels|get:s }} {{ prisma.exclusive_by_source|get:s }}{% if not forloop.last %}, {% endif %}{% endfor %})</div>
-        <div class="small muted">ligações manuais aplicadas {{ prisma.manual_links_applied }}{% if prisma.manual_links_unmatched %} · <span class="tag warn">{{ prisma.manual_links_unmatched }} sem correspondência</span>{% endif %}</div></div>
+        <div class="small muted">
+          {% for n, qtd in prisma.families_by_n_sources.items %}{% if qtd %}{{ qtd }} em {{ n }} base{% if n != "1" %}s{% endif %} · {% endif %}{% endfor %}ligações manuais aplicadas {{ prisma.manual_links_applied }}{% if prisma.manual_links_unmatched %} · <span class="tag warn">{{ prisma.manual_links_unmatched }} sem correspondência</span>{% endif %}</div>
       <div></div>
       <div class="lab">Elegibilidade</div>
       <div class="step">Etapa 1 — mantidas <b>{{ prisma.stage1_included }}</b>

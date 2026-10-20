@@ -23,6 +23,12 @@ class PyPiMetaTests(unittest.TestCase):
     def test_meta_completa_e_valida(self):
         self.assertEqual(validar(_completo(), RAIZ), [])
 
+    def test_urls_do_projeto_apontam_para_o_guia(self):
+        meta = _meta()
+        urls = meta["project"].get("urls", {})
+        self.assertEqual(urls.get("Documentation"), "https://ozeas.github.io/review_patentometria/")
+        self.assertIn("Source", urls)
+
     def test_nome_precisa_ser_pypi(self):
         meta = _completo()
         meta["project"]["name"] = "Patentometria Nacional"
