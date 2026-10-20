@@ -20,6 +20,17 @@ from core.vosviewer import cluster_indicators, parse_map, parse_network
 from . import export, forms, models as m, services, tabular
 
 
+def healthz(request):
+    """Prontidão para o instalador e para o CI: versão e estado do processo."""
+    from importlib.metadata import PackageNotFoundError, version as _version
+    from django.http import JsonResponse
+    try:
+        v = _version("patentometria")
+    except PackageNotFoundError:
+        v = "dev"
+    return JsonResponse({"status": "ok", "version": v})
+
+
 # ------------------------------------------------------------------ estudos
 def home(request):
     if request.method == "POST":

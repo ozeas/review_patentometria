@@ -26,6 +26,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -53,10 +54,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+# Pasta de dados: banco, mídia e estáticos coletados. Em desenvolvimento fica na
+# raiz do projeto (comportamento antigo); a CLI instalada aponta para a pasta do
+# usuário via PATENTOMETRIA_DATA_DIR.
+DATA_DIR = Path(os.environ.get("PATENTOMETRIA_DATA_DIR", BASE_DIR))
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.environ.get("PATENTOMETRIA_DB", BASE_DIR / "db.sqlite3"),
+        "NAME": os.environ.get("PATENTOMETRIA_DB", DATA_DIR / "db.sqlite3"),
     }
 }
 
@@ -67,7 +74,11 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = DATA_DIR / "media"
+MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
+STATIC_ROOT = DATA_DIR / "staticfiles"
+STATIC_ROOT.mkdir(parents=True, exist_ok=True)
+WHITENOISE_USE_FINDERS = True   # serve static/ dos apps sem collectstatic
 DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 20000
