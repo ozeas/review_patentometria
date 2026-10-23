@@ -102,8 +102,17 @@ def preparar_ambiente(d: Path, host: str) -> None:
     os.environ["PATENTOMETRIA_DATA_DIR"] = str(d)
     os.environ["PATENTOMETRIA_SECRET_KEY"] = garantir_secret_key(d)
     os.environ["PATENTOMETRIA_DEBUG"] = "0"
-    hosts = {"127.0.0.1", "localhost"} if host in ("127.0.0.1", "localhost") else {host}
-    os.environ["PATENTOMETRIA_ALLOWED_HOSTS"] = ",".join(sorted(hosts))
+    if host in ("127.0.0.1", "localhost"):
+        allowed = "127.0.0.1,localhost"
+    elif host == "0.0.0.0":
+        # Bind em todas as interfaces: o Host enviado pelo navegador nunca é "0.0.0.0"
+        # (nem mesmo o 127.0.0.1 aberto automaticamente pela própria CLI), então libera
+        # geral — é a mesma decisão de expor na rede que o usuário já tomou ao escolher
+        # este host.
+        allowed = "*"
+    else:
+        allowed = host
+    os.environ["PATENTOMETRIA_ALLOWED_HOSTS"] = allowed
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 

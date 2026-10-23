@@ -55,6 +55,11 @@ class CliTests(SimpleTestCase):
         self.assertIn("127.0.0.1", hosts)
         self.assertIn("localhost", hosts)
 
+    def test_ambiente_rede_libera_todos_os_hosts(self):
+        d = Path(tempfile.mkdtemp())
+        cli.preparar_ambiente(d, "0.0.0.0")
+        self.assertEqual(os.environ["PATENTOMETRIA_ALLOWED_HOSTS"], "*")
+
     def test_migra_dados_da_pasta_antiga(self):
         novo = Path(tempfile.mkdtemp())
         antigo = Path(tempfile.mkdtemp())

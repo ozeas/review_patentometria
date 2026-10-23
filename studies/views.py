@@ -108,7 +108,10 @@ def round_upload(request, pk):
     form = forms.UploadForm(request.POST, request.FILES)
     files = request.FILES.getlist("files")
     if not files:
-        messages.error(request, "Selecione ao menos um arquivo.")
+        messages.error(request, "Nenhum arquivo foi recebido. Confirme que um arquivo foi "
+                                "selecionado antes de enviar — alguns navegadores embutidos em "
+                                "outros aplicativos (ex.: apps de mensagem) não suportam bem a "
+                                "seleção de arquivos; tente pelo navegador padrão do dispositivo.")
         return redirect("round", pk)
     if not form.is_valid():
         messages.error(request, "Dados do formulário inválidos.")
