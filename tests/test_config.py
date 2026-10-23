@@ -48,3 +48,12 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(c["collection_date"], DEFAULT_CONFIG["collection_date"])
         self.assertEqual(c["utility_kinds"], DEFAULT_CONFIG["utility_kinds"])
         self.assertEqual(c["blocks"][0]["terms"], ["alpha"])
+
+    def test_cfg_repreenche_prevalencia_e_recortes_vazios(self):
+        from studies import models as m
+        s = m.Study.objects.create(name="parcial")
+        s.config["prevalence"] = {}
+        s.config["recortes"] = {}
+        s.save()
+        self.assertEqual(s.cfg["prevalence"], DEFAULT_CONFIG["prevalence"])
+        self.assertIn("nucleo", s.cfg["recortes"])

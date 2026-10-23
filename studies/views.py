@@ -106,10 +106,13 @@ def round_detail(request, pk):
 def round_upload(request, pk):
     rnd = get_object_or_404(m.Round, pk=pk)
     form = forms.UploadForm(request.POST, request.FILES)
-    if not form.is_valid():
+    files = request.FILES.getlist("files")
+    if not files:
         messages.error(request, "Selecione ao menos um arquivo.")
         return redirect("round", pk)
-    files = request.FILES.getlist("files")
+    if not form.is_valid():
+        messages.error(request, "Dados do formulário inválidos.")
+        return redirect("round", pk)
     queries = {}
     data_files = []
     for f in files:
@@ -487,7 +490,7 @@ def import_data(request, pk):
             if kind == "decisoes":
                 r = tabular.import_decisions(study, rows)
                 messages.success(request, f"Decisões: {r['criadas']} criadas, {r['atualizadas']} atualizadas, "
-                                          f"{r['ignoradas']} linhas sem número reconhecível.")
+                                          f"{r['ignoradas']} linhas sem número reconhecível ou sem decisão a registrar.")
             elif kind == "depositantes":
                 messages.success(request, f"{tabular.import_applicants(study, rows)} grafias de depositantes importadas.")
             elif kind == "inventores":

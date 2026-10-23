@@ -45,12 +45,7 @@ class RoundForm(forms.ModelForm):
         widgets = {"collection_date": forms.DateInput(attrs={"type": "date"})}
 
 
-class MultiFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True
-
-
 class UploadForm(forms.Form):
-    files = forms.FileField(widget=MultiFileInput(attrs={"multiple": True}), label="Arquivos de exportação")
     source = forms.ChoiceField(choices=[("", "detectar automaticamente")] + list(SOURCE_LABELS.items()),
                                required=False, label="Base")
     recorte = forms.CharField(required=False, label="Recorte",

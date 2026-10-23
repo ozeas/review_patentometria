@@ -252,9 +252,9 @@ def build_workbook(round_: m.Round) -> Workbook:
                    p["identified_by_source"][s]])
     ws.append(["Triagem", "Modelos de utilidade excluídos",
                f'=COUNTIFS(S2_Registros!H:H,"sim",S2_Registros!C:C,"{core_rec}")', p["excluded_utility"]])
-    ws.append(["Triagem", "Registros elegíveis à deduplicação", "=C2-C7", p["eligible"]])
+    ws.append(["Triagem", "Registros elegíveis à deduplicação", "=C2-C8", p["eligible"]])
     ws.append(["Triagem", "Base unificada (famílias)", "=COUNTA(S2_Consolidacao!A:A)-1", p["families"]])
-    ws.append(["Triagem", "Registros redundantes", "=C8-C9", p["redundant"]])
+    ws.append(["Triagem", "Registros redundantes", "=C9-C10", p["redundant"]])
     ws.append(["Elegibilidade", "Excluídas na etapa 1", '=COUNTIF(S3_Etapa1!F:F,"excluir")', p["stage1_excluded"]])
     for reason in cfg["stage1"]["exclusion_reasons"]:
         ws.append(["Elegibilidade", f"  {reason}", f'=COUNTIFS(S3_Etapa1!F:F,"excluir",S3_Etapa1!G:G,"{reason}")',

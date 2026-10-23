@@ -102,6 +102,11 @@ def import_decisions(study: m.Study, rows: list[dict]) -> dict:
             skipped += 1
             continue
         d = next((x for x in existing if set(x.numbers) & set(nums)), None)
+        tem_decisao = any(pick(row, f) for f in ("stage1", "stage1_reason", "stage2",
+                                                 "stage2_reason", "stratum", "notes"))
+        if d is None and not tem_decisao:
+            skipped += 1
+            continue
         if d is None:
             d = m.Decision(study=study, anchor=nums[0], numbers=nums)
             existing.append(d)

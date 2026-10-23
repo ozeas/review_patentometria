@@ -35,7 +35,8 @@ class Study(models.Model):
 
     @property
     def cfg(self):
-        return {**default_config(), **(self.config or {})}
+        from core.config import normalize_config
+        return normalize_config(self.config)
 
 
 class Round(models.Model):
